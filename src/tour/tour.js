@@ -1,22 +1,23 @@
+import { numSq, createRandomFen } from "./functions.js";
+
 export class Tour {
     // create tour classs
     constructor() {
-        this.fen = this.createRandomFen();
+        const init = createRandomFen();
+
+        this.fen = init.fenSt;
+        this.current = 8 * init.rankNum + init.fileNum;
+        this.visited = [8 * init.rankNum + init.fileNum];
     }
 
-    createRandomFen() {
-        const rank = Math.floor(Math.random() * 8);
-        const file = Math.floor(Math.random() * 8);
+    onDrop(sourceSquare, targetSquare) {
+        let src = numSq(sourceSquare);
+        let tgt = numSq(targetSquare);
 
-        const preKnight = "8/".repeat(rank);
-        const knight = file
-            ? file === 7
-                ? "7N/"
-                : `${file}N${7 - file}/`
-            : "N7/";
-        const postKnight = "8/".repeat(7 - rank);
-
-        const fen = `${preKnight}${knight}${postKnight}`.slice(0, -1);
-        return fen;
+        console.log(src);
+        console.log(tgt);
     }
+
+    // TODO: Function to track valid moves
+    // TODO: Function to update visted
 }

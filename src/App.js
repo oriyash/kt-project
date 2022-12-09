@@ -9,8 +9,9 @@ function App() {
 
         const move = tour.move(tgt);
 
-        console.log(tour.visited);
-        console.log(tour.validMoves);
+        // console.log(tour.visited);
+        // console.log(tour.validMoves);
+        console.log(tour.vistedSt);
 
         // const tourCopy = { ...tour };
         // console.log(tourCopy);

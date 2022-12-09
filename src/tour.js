@@ -6,6 +6,7 @@ export class Tour {
 
         this.fen = init.fen;
         this.visited = [initSq];
+        this.visitedSt = [initSqStr];
         this.validMoves = this.updateValids(initSqStr, initSq);
     }
 
@@ -34,6 +35,7 @@ export class Tour {
 
         if (!this.visited.includes(tgt) && this.validMoves.includes(tgt)) {
             this.visited.push(tgt);
+            this.visitedSt.push(str);
             // TODO: updateFen() function
             // this.updateFen();
             this.validMoves = this.updateValids(str, tgt);

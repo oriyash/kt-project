@@ -12,19 +12,12 @@ function App() {
         console.log(tour.visited);
         console.log(tour.validMoves);
 
-        // console.log(makeNumber(tgt));
-
         // const tourCopy = { ...tour };
         // console.log(tourCopy);
 
         setTour(tour);
         return move;
     };
-
-    // console.log(tour.visited);
-    // console.log(tour.validMoves);
-
-    // console.(tour.fen);
 
     return (
         <div id="app">

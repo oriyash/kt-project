@@ -4,17 +4,9 @@ export class Tour {
         const initSq = 8 * init.rank + init.file;
         const initSqStr = makeStrCoord(init.rank, init.file);
 
-        console.log(initSqStr);
-
-        // console.log(`${init.rank} and ${init.file}`);
-
         this.fen = init.fen;
         this.visited = [initSq];
-        // this.validMoves = Array(64);
         this.validMoves = this.updateValids(initSqStr, initSq);
-
-        console.log(this.validMoves);
-        console.log(this.visited);
     }
 
     makeFen() {
@@ -43,7 +35,7 @@ export class Tour {
         if (!this.visited.includes(tgt) && this.validMoves.includes(tgt)) {
             this.visited.push(tgt);
             // TODO: updateFen() function
-            // this.updateFen()
+            // this.updateFen();
             this.validMoves = this.updateValids(str, tgt);
             return true;
         } else {
@@ -57,16 +49,50 @@ export class Tour {
         const rank = coords.rank;
         const file = coords.file;
 
-        const vectors = [-17, -15, -10, -6, 6, 10, 15, 17];
+        let vectors = [-17, -15, -10, -6, 6, 10, 15, 17];
         const cases = [0, 1, 6, 7];
 
         if (!cases.includes(rank) && !cases.includes(file)) {
-            const res = vectors.map((val) => val + src);
-            return res;
-        } else {
-            return "f";
+            return vectors.map((val) => val + src);
         }
+
+        if (cases.includes(rank)) {
+            if (rank == 0) {
+                vectors = vectors.filter((vec) => vec > 0);
+            } else if (rank == 7) {
+                vectors = vectors.filter((vec) => vec < 0);
+            } else if (rank == 1) {
+                vectors = vectors.filter(
+                    (vec) => !(vec === -17 || vec === -15)
+                );
+            } else if (rank == 6) {
+                vectors = vectors.filter((vec) => !(vec === 17 || vec === 15));
+            }
+        }
+
+        if (cases.includes(file)) {
+            if (file == 0) {
+                vectors = vectors.filter(
+                    (vec) =>
+                        !(vec === -17 || vec === -10 || vec === 6 || vec === 15)
+                );
+            } else if (file == 7) {
+                vectors = vectors.filter(
+                    (vec) =>
+                        !(vec === 17 || vec === 10 || vec === -6 || vec === -15)
+                );
+            } else if (file == 1) {
+                vectors = vectors.filter((vec) => !(vec === -10 || vec === 6));
+            } else if (file == 6) {
+                vectors = vectors.filter((vec) => !(vec === 10 || vec === -6));
+            }
+        }
+
+        return vectors.map((val) => val + src);
     }
+    // updateFen() {
+    //     console.log(this.visited);
+    // }
 }
 
 function makeNumber(coord) {

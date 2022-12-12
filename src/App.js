@@ -1,23 +1,18 @@
 import { useState } from "react";
 import { Chessboard } from "react-chessboard";
 import { Tour } from "./tour";
+import { cloneDeep } from "lodash";
+
 function App() {
     const [tour, setTour] = useState(new Tour());
 
-    const onDrop = (src, tgt) => {
-        console.log(`from ${src} to ${tgt}`);
+    const onDrop = (src, tgt, piece) => {
+        console.log(`${piece} from ${src} to ${tgt}`);
 
-        const move = tour.move(tgt);
+        const tourCopy = cloneDeep(tour);
+        tourCopy.move(piece, tgt);
 
-        // console.log(tour.visited);
-        // console.log(tour.validMoves);
-        console.log(tour.vistedSt);
-
-        // const tourCopy = { ...tour };
-        // console.log(tourCopy);
-
-        setTour(tour);
-        return move;
+        setTour(tourCopy);
     };
 
     return (

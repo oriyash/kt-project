@@ -29,19 +29,20 @@ export class Tour {
         };
     }
 
-    move(tgtSt) {
+    move(piece, tgtSt) {
         const str = tgtSt;
         const tgt = makeNumber(str);
 
-        if (!this.visited.includes(tgt) && this.validMoves.includes(tgt)) {
+        if (
+            !this.visited.includes(tgt) &&
+            this.validMoves.includes(tgt) &&
+            piece === "wN"
+        ) {
             this.visited.push(tgt);
             this.visitedSt.push(str);
             // TODO: updateFen() function
-            // this.updateFen();
+            this.updateFen();
             this.validMoves = this.updateValids(str, tgt);
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -92,9 +93,38 @@ export class Tour {
 
         return vectors.map((val) => val + src);
     }
-    // updateFen() {
-    //     console.log(this.visited);
-    // }
+
+    updateFen() {
+        let fen = "";
+        let line = "";
+        let lastSeen = 0;
+
+        for (let i = 0; i < 64; i++) {
+            if (this.visited.includes(i)) {
+                const n =
+                    this.visited.indexOf(i) === this.visited.length - 1
+                        ? "N"
+                        : "n";
+
+                const pre = !lastSeen ? "" : lastSeen;
+                line = line.concat(`${pre}${n}`);
+                lastSeen = -1;
+            }
+            lastSeen += 1;
+
+            if ((i + 1) % 8 === 0) {
+                if (line === "") {
+                    fen = fen.concat("8/");
+                } else {
+                    const post = !lastSeen ? "" : lastSeen;
+                    fen = fen.concat(`${line}${post}/`);
+                }
+                line = "";
+                lastSeen = 0;
+            }
+        }
+        this.fen = fen.slice(0, -1);
+    }
 }
 
 function makeNumber(coord) {

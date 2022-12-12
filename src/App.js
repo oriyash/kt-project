@@ -15,9 +15,15 @@ function App() {
         setTour(tourCopy);
     };
 
+    const isDraggable = (piece) => (piece.piece === "wN" ? true : false);
+
     return (
         <div id="app">
-            <Chessboard position={tour.fen} onPieceDrop={onDrop} />
+            <Chessboard
+                position={tour.fen}
+                onPieceDrop={onDrop}
+                isDraggablePiece={isDraggable}
+            />
         </div>
     );
 }

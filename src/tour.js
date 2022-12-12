@@ -60,33 +60,33 @@ export class Tour {
         }
 
         if (cases.includes(rank)) {
-            if (rank == 0) {
+            if (rank === 0) {
                 vectors = vectors.filter((vec) => vec > 0);
-            } else if (rank == 7) {
+            } else if (rank === 7) {
                 vectors = vectors.filter((vec) => vec < 0);
-            } else if (rank == 1) {
+            } else if (rank === 1) {
                 vectors = vectors.filter(
                     (vec) => !(vec === -17 || vec === -15)
                 );
-            } else if (rank == 6) {
+            } else if (rank === 6) {
                 vectors = vectors.filter((vec) => !(vec === 17 || vec === 15));
             }
         }
 
         if (cases.includes(file)) {
-            if (file == 0) {
+            if (file === 0) {
                 vectors = vectors.filter(
                     (vec) =>
                         !(vec === -17 || vec === -10 || vec === 6 || vec === 15)
                 );
-            } else if (file == 7) {
+            } else if (file === 7) {
                 vectors = vectors.filter(
                     (vec) =>
                         !(vec === 17 || vec === 10 || vec === -6 || vec === -15)
                 );
-            } else if (file == 1) {
+            } else if (file === 1) {
                 vectors = vectors.filter((vec) => !(vec === -10 || vec === 6));
-            } else if (file == 6) {
+            } else if (file === 6) {
                 vectors = vectors.filter((vec) => !(vec === 10 || vec === -6));
             }
         }

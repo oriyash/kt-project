@@ -165,6 +165,8 @@ function makeNumber(coord) {
             file = 7;
             break;
         }
+        default:
+            break;
     }
 
     return 8 * rank + file;
@@ -207,6 +209,8 @@ function makeCoord(coord) {
             file = 7;
             break;
         }
+        default:
+            break;
     }
 
     return { rank: rank, file: file };
@@ -241,6 +245,8 @@ function makeStrCoord(rank, file) {
         case 7:
             ltrFile = "h";
             break;
+        default:
+            break;
     }
 
     switch (rank) {
@@ -267,6 +273,8 @@ function makeStrCoord(rank, file) {
             break;
         case 7:
             reRank = 1;
+            break;
+        default:
             break;
     }
 

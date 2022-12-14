@@ -1,133 +1,99 @@
-export class Tour {
-    constructor() {
-        const init = this.makeFen();
-        const initSq = 8 * init.rank + init.file;
-        const initSqStr = makeStrCoord(init.rank, init.file);
+export function makeFen() {
+    const rank = Math.floor(Math.random() * 8);
+    const file = Math.floor(Math.random() * 8);
 
-        this.fen = init.fen;
-        this.visited = [initSq];
-        this.visitedSt = [initSqStr];
-        this.validMoves = this.updateValids(initSqStr, initSq);
-    }
+    const preKnight = "8/".repeat(rank);
+    const knight = file ? (file === 7 ? "7N/" : `${file}N${7 - file}/`) : "N7/";
+    const postKnight = "8/".repeat(7 - rank);
 
-    makeFen() {
-        const rank = Math.floor(Math.random() * 8);
-        const file = Math.floor(Math.random() * 8);
-
-        const preKnight = "8/".repeat(rank);
-        const knight = file
-            ? file === 7
-                ? "7N/"
-                : `${file}N${7 - file}/`
-            : "N7/";
-        const postKnight = "8/".repeat(7 - rank);
-
-        return {
-            fen: `${preKnight}${knight}${postKnight}`.slice(0, -1),
-            rank: rank,
-            file: file,
-        };
-    }
-
-    move(piece, tgtSt) {
-        const str = tgtSt;
-        const tgt = makeNumber(str);
-
-        if (
-            !this.visited.includes(tgt) &&
-            this.validMoves.includes(tgt) &&
-            piece === "wN"
-        ) {
-            this.visited.push(tgt);
-            this.visitedSt.push(str);
-            // TODO: updateFen() function
-            this.updateFen();
-            this.validMoves = this.updateValids(str, tgt);
-        }
-    }
-
-    updateValids(srcSt, src) {
-        const coords = makeCoord(srcSt);
-
-        const rank = coords.rank;
-        const file = coords.file;
-
-        let vectors = [-17, -15, -10, -6, 6, 10, 15, 17];
-        const cases = [0, 1, 6, 7];
-
-        if (!cases.includes(rank) && !cases.includes(file)) {
-            return vectors.map((val) => val + src);
-        }
-
-        if (cases.includes(rank)) {
-            if (rank === 0) {
-                vectors = vectors.filter((vec) => vec > 0);
-            } else if (rank === 7) {
-                vectors = vectors.filter((vec) => vec < 0);
-            } else if (rank === 1) {
-                vectors = vectors.filter(
-                    (vec) => !(vec === -17 || vec === -15)
-                );
-            } else if (rank === 6) {
-                vectors = vectors.filter((vec) => !(vec === 17 || vec === 15));
-            }
-        }
-
-        if (cases.includes(file)) {
-            if (file === 0) {
-                vectors = vectors.filter(
-                    (vec) =>
-                        !(vec === -17 || vec === -10 || vec === 6 || vec === 15)
-                );
-            } else if (file === 7) {
-                vectors = vectors.filter(
-                    (vec) =>
-                        !(vec === 17 || vec === 10 || vec === -6 || vec === -15)
-                );
-            } else if (file === 1) {
-                vectors = vectors.filter((vec) => !(vec === -10 || vec === 6));
-            } else if (file === 6) {
-                vectors = vectors.filter((vec) => !(vec === 10 || vec === -6));
-            }
-        }
-
-        return vectors.map((val) => val + src);
-    }
-
-    updateFen() {
-        let fen = "";
-        let line = "";
-        let lastSeen = 0;
-
-        for (let i = 0; i < 64; i++) {
-            if (this.visited.includes(i)) {
-                const n =
-                    this.visited.indexOf(i) === this.visited.length - 1
-                        ? "N"
-                        : "n";
-
-                const pre = !lastSeen ? "" : lastSeen;
-                line = line.concat(`${pre}${n}`);
-                lastSeen = -1;
-            }
-            lastSeen += 1;
-
-            if ((i + 1) % 8 === 0) {
-                if (line === "") {
-                    fen = fen.concat("8/");
-                } else {
-                    const post = !lastSeen ? "" : lastSeen;
-                    fen = fen.concat(`${line}${post}/`);
-                }
-                line = "";
-                lastSeen = 0;
-            }
-        }
-        this.fen = fen.slice(0, -1);
-    }
+    return {
+        fen: `${preKnight}${knight}${postKnight}`.slice(0, -1),
+        rank: rank,
+        file: file,
+    };
 }
 
-function makeNumber(coord) {
+export function updateValids(srcSt, src) {
+    const coords = makeCoord(srcSt);
+
+    const rank = coords.rank;
+    const file = coords.file;
+
+    let vectors = [-17, -15, -10, -6, 6, 10, 15, 17];
+    const cases = [0, 1, 6, 7];
+
+    if (!cases.includes(rank) && !cases.includes(file)) {
+        vectors = vectors.map((val) => val + src);
+        return vectors;
+        // return vectors.filter((val) => !visited.includes(val));
+    }
+
+    if (cases.includes(rank)) {
+        if (rank === 0) {
+            vectors = vectors.filter((vec) => vec > 0);
+        } else if (rank === 7) {
+            vectors = vectors.filter((vec) => vec < 0);
+        } else if (rank === 1) {
+            vectors = vectors.filter((vec) => !(vec === -17 || vec === -15));
+        } else if (rank === 6) {
+            vectors = vectors.filter((vec) => !(vec === 17 || vec === 15));
+        }
+    }
+
+    if (cases.includes(file)) {
+        if (file === 0) {
+            vectors = vectors.filter(
+                (vec) =>
+                    !(vec === -17 || vec === -10 || vec === 6 || vec === 15)
+            );
+        } else if (file === 7) {
+            vectors = vectors.filter(
+                (vec) =>
+                    !(vec === 17 || vec === 10 || vec === -6 || vec === -15)
+            );
+        } else if (file === 1) {
+            vectors = vectors.filter((vec) => !(vec === -10 || vec === 6));
+        } else if (file === 6) {
+            vectors = vectors.filter((vec) => !(vec === 10 || vec === -6));
+        }
+    }
+
+    vectors = vectors.map((val) => val + src);
+    return vectors;
+    // return vectors.filter((val) => !visited.includes(val));
+}
+
+export function updateFen(visited) {
+    let fen = "";
+    let line = "";
+    let lastSeen = 0;
+
+    for (let i = 0; i < 64; i++) {
+        if (visited.includes(i)) {
+            const n = visited.indexOf(i) === visited.length - 1 ? "N" : "n";
+
+            const pre = !lastSeen ? "" : lastSeen;
+            line = line.concat(`${pre}${n}`);
+            lastSeen = -1;
+        }
+        lastSeen += 1;
+
+        if ((i + 1) % 8 === 0) {
+            if (line === "") {
+                fen = fen.concat("8/");
+            } else {
+                const post = !lastSeen ? "" : lastSeen;
+                fen = fen.concat(`${line}${post}/`);
+            }
+            line = "";
+            lastSeen = 0;
+        }
+    }
+
+    return fen.slice(0, -1);
+}
+
+export function makeNumber(coord) {
     // const rank = coord[-1];
     const rank = 7 - (Number(coord.slice(-1)) - 1);
     let file = coord[0];
@@ -216,7 +182,7 @@ function makeCoord(coord) {
     return { rank: rank, file: file };
 }
 
-function makeStrCoord(rank, file) {
+export function makeStrCoord(rank, file) {
     let ltrFile;
     let reRank;
 

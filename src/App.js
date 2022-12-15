@@ -1,8 +1,5 @@
 import { cloneDeep } from "lodash";
-import {
-    // useEffect,
-    useState,
-} from "react";
+import { useState } from "react";
 import { Chessboard } from "react-chessboard";
 import {
     makeFen,

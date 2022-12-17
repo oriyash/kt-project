@@ -2,23 +2,21 @@ import { cloneDeep } from "lodash";
 import { useState } from "react";
 import { Chessboard } from "react-chessboard";
 import {
-    makeFen,
     makeNumber,
     makeStrCoord,
+    sqToFen,
     updateFen,
     updateValids,
 } from "./tour";
 
 function App() {
-    const init = makeFen();
-    const initSq = 8 * init.rank + init.file;
-    const initSqStr = makeStrCoord(init.rank, init.file);
+    const [isFirst, setIsFirst] = useState(true);
 
     const [tour, setTour] = useState({
-        fen: init.fen,
-        visited: [initSq],
-        visitedStr: [initSqStr],
-        validMoves: updateValids(initSqStr, initSq),
+        fen: "8/8/8/8/8/8/8/8",
+        visited: [],
+        visitedStr: [],
+        validMoves: [],
     });
 
     // console.log(tour.test());
@@ -47,12 +45,32 @@ function App() {
         }
     };
 
+    const dropPiece = (square) => {
+        if (isFirst) {
+            setIsFirst(false);
+            const newTour = cloneDeep(tour);
+
+            const init = sqToFen(square);
+            const initSq = 8 * init.rank + init.file;
+            const initSqStr = makeStrCoord(init.rank, init.file);
+
+            newTour.visited = [...newTour.visited, initSq];
+            newTour.visitedStr = [...newTour.visitedStr, initSqStr];
+            newTour.validMoves = updateValids(square, makeNumber(square));
+            newTour.fen = init.fen;
+            setTour(newTour);
+        } else {
+            return null;
+        }
+    };
+
     return (
         <div id="app">
             <Chessboard
                 position={tour.fen}
                 isDraggablePiece={isDraggable}
                 onPieceDrop={onDrop}
+                onSquareClick={dropPiece}
             />
         </div>
     );

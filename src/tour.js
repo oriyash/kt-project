@@ -13,7 +13,12 @@ export function makeFen() {
     };
 }
 
-export function updateValids(srcSt, src) {
+export function updateValids(tour, srcSt, src) {
+    const valids = initValids(srcSt, src);
+    return valids.filter((val) => !tour.visited.includes(val));
+}
+
+export function initValids(srcSt, src) {
     const coords = makeCoord(srcSt);
 
     const rank = coords.rank;

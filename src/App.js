@@ -5,8 +5,9 @@ import {
     makeFen,
     makeNumber,
     makeStrCoord,
-    updateFen,
     updateValids,
+    updateFen,
+    initValids,
 } from "./tour";
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
         fen: init.fen,
         visited: [initSq],
         visitedStr: [initSqStr],
-        validMoves: updateValids(initSqStr, initSq),
+        validMoves: initValids(initSqStr, initSq),
     });
 
     // console.log(tour.test());
@@ -35,9 +36,7 @@ function App() {
 
             newTour.visited = [...newTour.visited, tgt];
             newTour.visitedStr = [...newTour.visitedStr, tgtSt];
-            newTour.validMoves = updateValids(tgtSt, tgt).filter(
-                (val) => !newTour.visited.includes(val)
-            );
+            newTour.validMoves = updateValids(tour, tgtSt, tgt);
             newTour.fen = updateFen(newTour.visited);
             console.log(newTour);
             setTour(newTour);

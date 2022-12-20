@@ -414,6 +414,8 @@ function getSq(num) {
             return "g1";
         case 63:
             return "h1";
+        default:
+            break;
     }
 }
 

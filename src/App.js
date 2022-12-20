@@ -66,7 +66,7 @@ function App() {
     };
 
     const undo = () => {
-        lastTour !== null ? setTour(lastTour) : null;
+        lastTour !== null ? setTour(lastTour) : setLastTour(null);
         setImpossible(false);
     };
 

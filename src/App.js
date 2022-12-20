@@ -2,6 +2,7 @@ import { cloneDeep } from "lodash";
 import { useState } from "react";
 import { Chessboard } from "react-chessboard";
 import {
+    completeTour,
     makeFen,
     makeNumber,
     makeStrCoord,
@@ -9,6 +10,7 @@ import {
     updateFen,
     initValids,
 } from "./tour";
+import CompletedPanel from "./CompletedPanel";
 
 function App() {
     const init = makeFen();
@@ -20,14 +22,15 @@ function App() {
         visited: [initSq],
         visitedStr: [initSqStr],
         validMoves: initValids(initSqStr, initSq),
+        completed: null,
     });
 
-    // console.log(tour.test());
+    const [lastTour, setLastTour] = useState(null);
 
     const isDraggable = (piece) => (piece.piece === "wN" ? true : false);
 
     const onDrop = (srcSt, tgtSt, piece) => {
-        console.log(`${piece} from ${srcSt} to ${tgtSt}`);
+        // console.log(`${piece} from ${srcSt} to ${tgtSt}`);
 
         const tgt = makeNumber(tgtSt);
 
@@ -38,12 +41,23 @@ function App() {
             newTour.visitedStr = [...newTour.visitedStr, tgtSt];
             newTour.validMoves = updateValids(tour, tgtSt, tgt);
             newTour.fen = updateFen(newTour.visited);
-            console.log(newTour);
+            // console.log(newTour);
+            setLastTour(tour);
             setTour(newTour);
             return true;
         } else {
             return false;
         }
+    };
+
+    const onClick = () => {
+        console.log(tour);
+        const newTour = completeTour(tour);
+        console.log(newTour);
+    };
+
+    const undo = () => {
+        lastTour !== null ? setTour(lastTour) : null;
     };
 
     return (
@@ -53,6 +67,9 @@ function App() {
                 isDraggablePiece={isDraggable}
                 onPieceDrop={onDrop}
             />
+            <button onClick={onClick}>completeTour</button>
+            <button onClick={undo}>undo</button>
+            <CompletedPanel />
         </div>
     );
 }

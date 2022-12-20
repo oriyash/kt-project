@@ -9,6 +9,7 @@ import {
     updateValids,
     updateFen,
     initValids,
+    genArrows,
 } from "./tour";
 import CompletedPanel from "./CompletedPanel";
 
@@ -26,6 +27,8 @@ function App() {
     });
 
     const [lastTour, setLastTour] = useState(null);
+    const [impossible, setImpossible] = useState(false);
+    const [arrows, setArrows] = useState([]);
 
     const isDraggable = (piece) => (piece.piece === "wN" ? true : false);
 
@@ -50,14 +53,21 @@ function App() {
         }
     };
 
-    const onClick = () => {
-        console.log(tour);
-        const newTour = completeTour(tour);
-        console.log(newTour);
+    const finishTour = () => {
+        const completed = completeTour(tour);
+
+        if (completed !== null) {
+            const newTour = cloneDeep(tour);
+            newTour.completed = completed;
+            setTour(newTour);
+        } else {
+            setImpossible(true);
+        }
     };
 
     const undo = () => {
         lastTour !== null ? setTour(lastTour) : null;
+        setImpossible(false);
     };
 
     return (
@@ -66,10 +76,14 @@ function App() {
                 position={tour.fen}
                 isDraggablePiece={isDraggable}
                 onPieceDrop={onDrop}
+                customArrows={arrows}
             />
-            <button onClick={onClick}>completeTour</button>
-            <button onClick={undo}>undo</button>
-            <CompletedPanel />
+            <button onClick={finishTour}>Complete Tour</button>
+            <button onClick={undo}>Undo</button>
+            <button onClick={() => setArrows(genArrows(tour.visitedStr))}>
+                Show path
+            </button>
+            <CompletedPanel tour={tour} impossible={impossible} />
         </div>
     );
 }

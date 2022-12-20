@@ -265,10 +265,10 @@ export function completeTour(tour) {
         newTour.validMoves = updateValids(newTour, getSq(bestMove), bestMove);
     }
 
-    console.log(newTour.visitedStr);
+    // console.log(newTour.visitedStr);
 
     if (newTour.visited.length === 64) {
-        return newTour;
+        return { visited: newTour.visited, visitedStr: newTour.visitedStr };
     } else {
         return null;
     }
@@ -415,4 +415,21 @@ function getSq(num) {
         case 63:
             return "h1";
     }
+}
+
+export function makeMoveStr(visitedStr) {
+    let line = "";
+    visitedStr.forEach(
+        (val, index) => (line = line.concat(`${index + 1}.${val} `))
+    );
+    return line;
+}
+
+export function genArrows(visitedStr) {
+    let arrows = [];
+    for (let i = 1; i < visitedStr.length; i++) {
+        let arrow = [visitedStr[i - 1], visitedStr[i]];
+        arrows.push(arrow);
+    }
+    return arrows;
 }

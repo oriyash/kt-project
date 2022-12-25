@@ -284,7 +284,7 @@ function findBestMove(tour) {
     return valids[deg.indexOf(min(deg))];
 }
 
-function getSq(num) {
+export function getSq(num) {
     switch (num) {
         case 0:
             return "a8";

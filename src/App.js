@@ -11,6 +11,7 @@ import {
     updateValids,
     initValids,
     genArrows,
+    getSq,
 } from "./tour";
 import CompletedPanel from "./CompletedPanel";
 
@@ -28,6 +29,7 @@ function App() {
     const [lastTour, setLastTour] = useState(null);
     const [impossible, setImpossible] = useState(false);
     const [arrows, setArrows] = useState([]);
+    const [options, setOptions] = useState({});
 
     const isDraggable = (piece) => (piece.piece === "wN" ? true : false);
 
@@ -50,6 +52,29 @@ function App() {
         } else {
             return false;
         }
+    };
+
+    const mouseOver = (square) => {
+        if (square === tour.visitedStr.slice(-1)[0]) {
+            const validStr = tour.validMoves.map((value) => getSq(value));
+            const newSquares = {};
+
+            newSquares[square] = { background: "rgba(255, 255, 0, 0.4)" };
+
+            validStr.forEach((value) => {
+                newSquares[value] = {
+                    background:
+                        "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)",
+                    borderRadius: "50%",
+                };
+            });
+
+            setOptions(newSquares);
+        }
+    };
+
+    const mouseOut = () => {
+        if (Object.keys(options).length !== 0) setOptions({});
     };
 
     const finishTour = () => {
@@ -114,6 +139,9 @@ function App() {
                 onPieceDrop={onDrop}
                 customArrows={arrows}
                 onSquareClick={dropPiece}
+                onMouseOverSquare={mouseOver}
+                onMouseOutSquare={mouseOut}
+                customSquareStyles={{ ...options }}
             />
             <button onClick={finishTour}>Complete Tour</button>
             <button onClick={undo}>Undo</button>

@@ -59,14 +59,18 @@ function App() {
             const validStr = tour.validMoves.map((value) => getSq(value));
             const newSquares = {};
 
-            newSquares[square] = { background: "rgba(255, 255, 0, 0.4)" };
+            newSquares[square] = validStr.length
+                ? { background: "rgba(255, 255, 0, 0.4)" }
+                : { background: "rgba(255,0, 0, 0.4)" };
 
             validStr.forEach((value) => {
-                newSquares[value] = {
-                    background:
-                        "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)",
-                    borderRadius: "50%",
-                };
+                updateValids(tour, value, makeNumber(value)).length !== 0
+                    ? (newSquares[value] = {
+                          background:
+                              "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
+                          borderRadius: "50%",
+                      })
+                    : (newSquares[value] = { background: "#ff0000" });
             });
 
             setOptions(newSquares);

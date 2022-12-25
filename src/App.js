@@ -70,7 +70,10 @@ function App() {
                               "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
                           borderRadius: "50%",
                       })
-                    : (newSquares[value] = { background: "#ff0000" });
+                    : (newSquares[value] = {
+                          background:
+                              "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)",
+                      });
             });
 
             setOptions(newSquares);

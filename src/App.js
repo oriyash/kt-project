@@ -98,10 +98,10 @@ function App() {
             const initSq = 8 * init.rank + init.file;
             const initSqStr = makeStrCoord(init.rank, init.file);
 
+            newTour.fen = init.fen;
             newTour.visited = [initSq];
             newTour.visitedStr = [initSqStr];
-            newTour.validMoves = initValids(initSq, makeNumber(initSq));
-            newTour.fen = init.fen;
+            newTour.validMoves = initValids(initSqStr, initSq);
             setTour(newTour);
         }
     };

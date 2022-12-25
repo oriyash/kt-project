@@ -6,23 +6,22 @@ import {
     makeFen,
     makeNumber,
     makeStrCoord,
-    updateValids,
+    sqToFen,
     updateFen,
+    updateValids,
     initValids,
     genArrows,
 } from "./tour";
 import CompletedPanel from "./CompletedPanel";
 
 function App() {
-    const init = makeFen();
-    const initSq = 8 * init.rank + init.file;
-    const initSqStr = makeStrCoord(init.rank, init.file);
+    const [isFirst, setIsFirst] = useState(true);
 
     const [tour, setTour] = useState({
-        fen: init.fen,
-        visited: [initSq],
-        visitedStr: [initSqStr],
-        validMoves: initValids(initSqStr, initSq),
+        fen: "8/8/8/8/8/8/8/8",
+        visited: [],
+        visitedStr: [],
+        validMoves: [],
         completed: null,
     });
 
@@ -65,9 +64,46 @@ function App() {
         }
     };
 
+    //this is broken
     const undo = () => {
         lastTour !== null ? setTour(lastTour) : setLastTour(null);
         setImpossible(false);
+    };
+
+    const dropPiece = (square) => {
+        if (isFirst) {
+            setIsFirst(false);
+            const newTour = cloneDeep(tour);
+
+            const init = sqToFen(square);
+            const initSq = 8 * init.rank + init.file;
+            const initSqStr = makeStrCoord(init.rank, init.file);
+
+            newTour.visited = [...newTour.visited, initSq];
+            newTour.visitedStr = [...newTour.visitedStr, initSqStr];
+            newTour.validMoves = initValids(square, makeNumber(square));
+            newTour.fen = init.fen;
+            setTour(newTour);
+        } else {
+            return null;
+        }
+    };
+
+    const randomStart = () => {
+        if (isFirst) {
+            setIsFirst(false);
+            const newTour = cloneDeep(tour);
+
+            const init = makeFen();
+            const initSq = 8 * init.rank + init.file;
+            const initSqStr = makeStrCoord(init.rank, init.file);
+
+            newTour.visited = [initSq];
+            newTour.visitedStr = [initSqStr];
+            newTour.validMoves = initValids(initSq, makeNumber(initSq));
+            newTour.fen = init.fen;
+            setTour(newTour);
+        }
     };
 
     return (
@@ -77,12 +113,16 @@ function App() {
                 isDraggablePiece={isDraggable}
                 onPieceDrop={onDrop}
                 customArrows={arrows}
+                onSquareClick={dropPiece}
             />
             <button onClick={finishTour}>Complete Tour</button>
             <button onClick={undo}>Undo</button>
             <button onClick={() => setArrows(genArrows(tour.visitedStr))}>
                 Show path
             </button>
+            {isFirst ? (
+                <button onClick={randomStart}>Random Start</button>
+            ) : null}
             <CompletedPanel tour={tour} impossible={impossible} />
         </div>
     );

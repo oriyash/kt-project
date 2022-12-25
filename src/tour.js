@@ -435,3 +435,19 @@ export function genArrows(visitedStr) {
     }
     return arrows;
 }
+
+export function sqToFen(sqSt) {
+    const coord = makeCoord(sqSt);
+    const rank = coord.rank;
+    const file = coord.file;
+
+    const preKnight = "8/".repeat(rank);
+    const knight = file ? (file === 7 ? "7N/" : `${file}N${7 - file}/`) : "N7/";
+    const postKnight = "8/".repeat(7 - rank);
+
+    return {
+        fen: `${preKnight}${knight}${postKnight}`.slice(0, -1),
+        rank: rank,
+        file: file,
+    };
+}

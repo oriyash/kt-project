@@ -138,6 +138,28 @@ function App() {
         }
     };
 
+    const visualiseComplete = async () => {
+        // console.log(tour);
+        if (tour.completed !== null) {
+            let visiteds = [];
+
+            for (let i = tour.visited.length; i < 65; i++) {
+                visiteds.push([...tour.completed.visited.slice(0, i)]);
+            }
+
+            let fens = visiteds.map((val) => updateFen(val));
+
+            for (let fen of fens) {
+                const newTour = cloneDeep(tour);
+                newTour.fen = fen;
+                setTour(newTour);
+                await timer(500);
+            }
+        }
+    };
+
+    const timer = (ms) => new Promise((res) => setTimeout(res, ms));
+
     return (
         <div id="app">
             <Chessboard
@@ -157,6 +179,9 @@ function App() {
             </button>
             {isFirst ? (
                 <button onClick={randomStart}>Random Start</button>
+            ) : null}
+            {tour.completed !== null ? (
+                <button onClick={visualiseComplete}>Visualise</button>
             ) : null}
             <CompletedPanel tour={tour} impossible={impossible} />
         </div>

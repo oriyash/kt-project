@@ -96,6 +96,18 @@ function App() {
         }
     };
 
+    const reset = () => {
+        setTour({
+            fen: "8/8/8/8/8/8/8/8",
+            visited: [],
+            visitedStr: [],
+            validMoves: [],
+            completed: null,
+        });
+        setLastTour(null);
+        setIsFirst(true);
+    };
+
     //this is broken
     const undo = () => {
         lastTour !== null ? setTour(lastTour) : setLastTour(null);
@@ -182,6 +194,9 @@ function App() {
             ) : null}
             {tour.completed !== null ? (
                 <button onClick={visualiseComplete}>Visualise</button>
+            ) : null}
+            {tour.visited.length !== 0 ? (
+                <button onClick={reset}>Reset</button>
             ) : null}
             <CompletedPanel tour={tour} impossible={impossible} />
         </div>

@@ -163,7 +163,15 @@ function App() {
 
             for (let fen of fens) {
                 const newTour = cloneDeep(tour);
+                newTour.visited = visiteds[fens.indexOf(fen)];
+                newTour.visitedStr = newTour.visited.map((val) => getSq(val));
+                newTour.validMoves = updateValids(
+                    newTour,
+                    newTour.visitedStr.slice(-1)[0],
+                    newTour.visited.slice(-1)[0]
+                );
                 newTour.fen = fen;
+                console.log(newTour);
                 setTour(newTour);
                 await timer(500);
             }

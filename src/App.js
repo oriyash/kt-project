@@ -171,7 +171,7 @@ function App() {
                     newTour.visited.slice(-1)[0]
                 );
                 newTour.fen = fen;
-                console.log(newTour);
+                // console.log(newTour);
                 setTour(newTour);
                 await timer(500);
             }

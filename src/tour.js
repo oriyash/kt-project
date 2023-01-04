@@ -274,7 +274,7 @@ export function completeTour(tour) {
     }
 }
 
-function findBestMove(tour) {
+export function findBestMove(tour) {
     const valids = tour.validMoves;
 
     const deg = valids.map(

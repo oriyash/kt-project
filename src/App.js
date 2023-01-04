@@ -12,8 +12,13 @@ import {
     initValids,
     genArrows,
     getSq,
+    findBestMove,
 } from "./tour";
 import CompletedPanel from "./CompletedPanel";
+import Moves from "./Moves";
+import "./App.css";
+import { Container } from "@mui/system";
+import { Button, ButtonGroup } from "@mui/material";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -75,6 +80,18 @@ function App() {
                               "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)",
                       });
             });
+
+            const bestMove = getSq(findBestMove(tour));
+
+            if (
+                newSquares[bestMove].background !==
+                "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)"
+            ) {
+                newSquares[bestMove] = {
+                    background:
+                        "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
+                };
+            }
 
             setOptions(newSquares);
         }
@@ -181,7 +198,7 @@ function App() {
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
     return (
-        <div id="app">
+        <Container className="container">
             <Chessboard
                 position={tour.fen}
                 isDraggablePiece={isDraggable}
@@ -191,23 +208,45 @@ function App() {
                 onMouseOverSquare={mouseOver}
                 onMouseOutSquare={mouseOut}
                 customSquareStyles={{ ...options }}
+                customBoardStyle={{
+                    borderRadius: "4px",
+                    boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
+                }}
+                customDarkSquareStyle={{ background: "#90a2ad" }}
+                customLightSquareStyle={{ background: "#dfe3e6" }}
             />
-            <button onClick={finishTour}>Complete Tour</button>
-            <button onClick={undo}>Undo</button>
-            <button onClick={() => setArrows(genArrows(tour.visitedStr))}>
-                Show path
-            </button>
-            {isFirst ? (
-                <button onClick={randomStart}>Random Start</button>
-            ) : null}
-            {tour.completed !== null ? (
-                <button onClick={visualiseComplete}>Visualise</button>
-            ) : null}
-            {tour.visited.length !== 0 ? (
-                <button onClick={reset}>Reset</button>
-            ) : null}
+            <ButtonGroup variant="contained" className="controls">
+                {isFirst ? (
+                    <Button onClick={randomStart}>Random Start</Button>
+                ) : null}
+
+                {tour.visited.length !== 0 ? (
+                    <Button onClick={finishTour}>Complete Tour</Button>
+                ) : null}
+
+                {tour.completed !== null ? (
+                    <Button onClick={visualiseComplete}>Visualise</Button>
+                ) : null}
+
+                {tour.visited.length !== 0 ? (
+                    <Button
+                        onClick={() => setArrows(genArrows(tour.visitedStr))}
+                    >
+                        Show path
+                    </Button>
+                ) : null}
+
+                {tour.visited.length !== 0 ? (
+                    <Button onClick={undo}>Undo</Button>
+                ) : null}
+
+                {tour.visited.length !== 0 ? (
+                    <Button onClick={reset}>Reset</Button>
+                ) : null}
+            </ButtonGroup>
+            <Moves tour={tour} />
             <CompletedPanel tour={tour} impossible={impossible} />
-        </div>
+        </Container>
     );
 }
 

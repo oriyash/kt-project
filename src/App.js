@@ -69,7 +69,8 @@ function App() {
                 : { background: "rgba(255,0, 0, 0.4)" };
 
             validStr.forEach((value) => {
-                updateValids(tour, value, makeNumber(value)).length !== 0
+                updateValids(tour, value, makeNumber(value)).length !== 0 ||
+                tour.visited.length === 63
                     ? (newSquares[value] = {
                           background:
                               "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",

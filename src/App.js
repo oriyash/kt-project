@@ -36,7 +36,8 @@ function App() {
     const [arrows, setArrows] = useState([]);
     const [options, setOptions] = useState({});
 
-    const isDraggable = (piece) => (piece.piece === "wN" ? true : false);
+    const isDraggable = (piece) =>
+        piece.piece === "wN" && tour.visited.length !== 64 ? true : false;
 
     const onDrop = (srcSt, tgtSt, piece) => {
         // console.log(`${piece} from ${srcSt} to ${tgtSt}`);

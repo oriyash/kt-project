@@ -64,9 +64,10 @@ function App() {
             const validStr = tour.validMoves.map((value) => getSq(value));
             const newSquares = {};
 
-            newSquares[square] = validStr.length
-                ? { background: "rgba(255, 255, 0, 0.4)" }
-                : { background: "rgba(255,0, 0, 0.4)" };
+            newSquares[square] =
+                validStr.length !== 0 || tour.visited.length === 64
+                    ? { background: "rgba(255, 255, 0, 0.4)" }
+                    : { background: "rgba(255,0, 0, 0.4)" };
 
             validStr.forEach((value) => {
                 updateValids(tour, value, makeNumber(value)).length !== 0 ||
@@ -83,17 +84,18 @@ function App() {
             });
 
             const bestMove = getSq(findBestMove(tour));
-
-            if (
-                newSquares[bestMove].background !==
-                "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)"
-            ) {
-                newSquares[bestMove] = {
-                    background:
-                        "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
-                };
+            if (bestMove !== null) {
+                if (
+                    newSquares[bestMove].background !==
+                        "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
+                    newSquares[bestMove].background !== "rgba(255,0, 0, 0.4)"
+                ) {
+                    newSquares[bestMove] = {
+                        background:
+                            "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
+                    };
+                }
             }
-
             setOptions(newSquares);
         }
     };

@@ -275,13 +275,17 @@ export function completeTour(tour) {
 }
 
 export function findBestMove(tour) {
-    const valids = tour.validMoves;
+    if (tour.validMoves.length !== 0) {
+        const valids = tour.validMoves;
 
-    const deg = valids.map(
-        (move) => updateValids(tour, getSq(move), move).length
-    );
+        const deg = valids.map(
+            (move) => updateValids(tour, getSq(move), move).length
+        );
 
-    return valids[deg.indexOf(min(deg))];
+        return valids[deg.indexOf(min(deg))];
+    } else {
+        return null;
+    }
 }
 
 export function getSq(num) {
@@ -415,7 +419,7 @@ export function getSq(num) {
         case 63:
             return "h1";
         default:
-            break;
+            return null;
     }
 }
 

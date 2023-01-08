@@ -14,11 +14,12 @@ import {
     getSq,
     findBestMove,
 } from "./tour";
-import CompletedPanel from "./CompletedPanel";
+// import CompletedPanel from "./CompletedPanel";
 import Moves from "./Moves";
 import "./App.css";
 import { Container } from "@mui/system";
-import { Button, ButtonGroup } from "@mui/material";
+import { Button, ButtonGroup, Grid } from "@mui/material";
+import Status from "./Status";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -32,9 +33,10 @@ function App() {
     });
 
     const [lastTour, setLastTour] = useState(null);
-    const [impossible, setImpossible] = useState(false);
+    // const [impossible, setImpossible] = useState(false);
     const [arrows, setArrows] = useState([]);
     const [options, setOptions] = useState({});
+    const [completed, setCompleted] = useState(false);
 
     const isDraggable = (piece) =>
         piece.piece === "wN" && tour.visited.length !== 64 ? true : false;
@@ -54,6 +56,11 @@ function App() {
             // console.log(newTour);
             setLastTour(tour);
             setTour(newTour);
+            if (newTour.visited.length === 64) {
+                setCompleted(true);
+            } else if (newTour.validMoves.length === 0) {
+                setCompleted(null);
+            }
             return true;
         } else {
             return false;
@@ -111,9 +118,10 @@ function App() {
         if (completed !== null) {
             const newTour = cloneDeep(tour);
             newTour.completed = completed;
+            setCompleted(true);
             setTour(newTour);
         } else {
-            setImpossible(true);
+            setCompleted(null);
         }
     };
 
@@ -132,7 +140,7 @@ function App() {
     //this is broken
     const undo = () => {
         lastTour !== null ? setTour(lastTour) : setLastTour(null);
-        setImpossible(false);
+        // setImpossible(false);
     };
 
     const dropPiece = (square) => {
@@ -203,53 +211,76 @@ function App() {
 
     return (
         <Container className="container">
-            <Chessboard
-                position={tour.fen}
-                isDraggablePiece={isDraggable}
-                onPieceDrop={onDrop}
-                customArrows={arrows}
-                onSquareClick={dropPiece}
-                onMouseOverSquare={mouseOver}
-                onMouseOutSquare={mouseOut}
-                customSquareStyles={{ ...options }}
-                customBoardStyle={{
-                    borderRadius: "4px",
-                    boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
-                }}
-                customDarkSquareStyle={{ background: "#90a2ad" }}
-                customLightSquareStyle={{ background: "#dfe3e6" }}
-            />
-            <ButtonGroup variant="contained" className="controls">
-                {isFirst ? (
-                    <Button onClick={randomStart}>Random Start</Button>
-                ) : null}
-
-                {tour.visited.length !== 0 ? (
-                    <Button onClick={finishTour}>Complete Tour</Button>
-                ) : null}
-
-                {tour.completed !== null ? (
-                    <Button onClick={visualiseComplete}>Visualise</Button>
-                ) : null}
-
-                {tour.visited.length !== 0 ? (
-                    <Button
-                        onClick={() => setArrows(genArrows(tour.visitedStr))}
+            <Grid container>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Chessboard
+                        position={tour.fen}
+                        isDraggablePiece={isDraggable}
+                        onPieceDrop={onDrop}
+                        customArrows={arrows}
+                        onSquareClick={dropPiece}
+                        onMouseOverSquare={mouseOver}
+                        onMouseOutSquare={mouseOut}
+                        customSquareStyles={{ ...options }}
+                        customBoardStyle={{
+                            borderRadius: "4px",
+                            boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
+                        }}
+                        customDarkSquareStyle={{ background: "#90a2ad" }}
+                        customLightSquareStyle={{ background: "#dfe3e6" }}
+                    />
+                    <ButtonGroup
+                        variant="contained"
+                        className="controls"
+                        // orientation="vertical"
                     >
-                        Show path
-                    </Button>
-                ) : null}
+                        {isFirst ? (
+                            <Button onClick={randomStart}>Random Start</Button>
+                        ) : null}
 
-                {tour.visited.length !== 0 ? (
-                    <Button onClick={undo}>Undo</Button>
-                ) : null}
+                        {tour.visited.length !== 0 ? (
+                            <Button
+                                disabled={
+                                    tour.completed !== null ||
+                                    tour.visited.length === 64
+                                }
+                                onClick={finishTour}
+                            >
+                                Complete Tour
+                            </Button>
+                        ) : null}
 
-                {tour.visited.length !== 0 ? (
-                    <Button onClick={reset}>Reset</Button>
-                ) : null}
-            </ButtonGroup>
-            <Moves tour={tour} />
-            <CompletedPanel tour={tour} impossible={impossible} />
+                        {tour.completed !== null ? (
+                            <Button onClick={visualiseComplete}>
+                                Visualise
+                            </Button>
+                        ) : null}
+
+                        {tour.visited.length !== 0 ? (
+                            <Button
+                                onClick={() =>
+                                    setArrows(genArrows(tour.visitedStr))
+                                }
+                            >
+                                Show path
+                            </Button>
+                        ) : null}
+
+                        {tour.visited.length !== 0 ? (
+                            <Button onClick={undo}>Undo</Button>
+                        ) : null}
+
+                        {tour.visited.length !== 0 ? (
+                            <Button onClick={reset}>Reset</Button>
+                        ) : null}
+                    </ButtonGroup>
+                </Grid>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Status tour={tour} completed={completed} />
+                    <Moves tour={tour} />
+                </Grid>
+            </Grid>
+            {/* <CompletedPanel tour={tour} impossible={impossible} /> */}
         </Container>
     );
 }

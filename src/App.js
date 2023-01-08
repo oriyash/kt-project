@@ -12,8 +12,14 @@ import {
     initValids,
     genArrows,
     getSq,
+    findBestMove,
 } from "./tour";
-import CompletedPanel from "./CompletedPanel";
+// import CompletedPanel from "./CompletedPanel";
+import Moves from "./Moves";
+import "./App.css";
+import { Container } from "@mui/system";
+import { Button, ButtonGroup, Grid } from "@mui/material";
+import Status from "./Status";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -27,11 +33,13 @@ function App() {
     });
 
     const [lastTour, setLastTour] = useState(null);
-    const [impossible, setImpossible] = useState(false);
+    // const [impossible, setImpossible] = useState(false);
     const [arrows, setArrows] = useState([]);
     const [options, setOptions] = useState({});
+    const [completed, setCompleted] = useState(false);
 
-    const isDraggable = (piece) => (piece.piece === "wN" ? true : false);
+    const isDraggable = (piece) =>
+        piece.piece === "wN" && tour.visited.length !== 64 ? true : false;
 
     const onDrop = (srcSt, tgtSt, piece) => {
         // console.log(`${piece} from ${srcSt} to ${tgtSt}`);
@@ -48,6 +56,11 @@ function App() {
             // console.log(newTour);
             setLastTour(tour);
             setTour(newTour);
+            if (newTour.visited.length === 64) {
+                setCompleted(true);
+            } else if (newTour.validMoves.length === 0) {
+                setCompleted(null);
+            }
             return true;
         } else {
             return false;
@@ -59,12 +72,14 @@ function App() {
             const validStr = tour.validMoves.map((value) => getSq(value));
             const newSquares = {};
 
-            newSquares[square] = validStr.length
-                ? { background: "rgba(255, 255, 0, 0.4)" }
-                : { background: "rgba(255,0, 0, 0.4)" };
+            newSquares[square] =
+                validStr.length !== 0 || tour.visited.length === 64
+                    ? { background: "rgba(255, 255, 0, 0.4)" }
+                    : { background: "rgba(255,0, 0, 0.4)" };
 
             validStr.forEach((value) => {
-                updateValids(tour, value, makeNumber(value)).length !== 0
+                updateValids(tour, value, makeNumber(value)).length !== 0 ||
+                tour.visited.length === 63
                     ? (newSquares[value] = {
                           background:
                               "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
@@ -76,6 +91,19 @@ function App() {
                       });
             });
 
+            const bestMove = getSq(findBestMove(tour));
+            if (bestMove !== null) {
+                if (
+                    newSquares[bestMove].background !==
+                        "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
+                    newSquares[bestMove].background !== "rgba(255,0, 0, 0.4)"
+                ) {
+                    newSquares[bestMove] = {
+                        background:
+                            "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
+                    };
+                }
+            }
             setOptions(newSquares);
         }
     };
@@ -90,9 +118,10 @@ function App() {
         if (completed !== null) {
             const newTour = cloneDeep(tour);
             newTour.completed = completed;
+            setCompleted(true);
             setTour(newTour);
         } else {
-            setImpossible(true);
+            setCompleted(null);
         }
     };
 
@@ -111,7 +140,7 @@ function App() {
     //this is broken
     const undo = () => {
         lastTour !== null ? setTour(lastTour) : setLastTour(null);
-        setImpossible(false);
+        // setImpossible(false);
     };
 
     const dropPiece = (square) => {
@@ -181,33 +210,78 @@ function App() {
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
     return (
-        <div id="app">
-            <Chessboard
-                position={tour.fen}
-                isDraggablePiece={isDraggable}
-                onPieceDrop={onDrop}
-                customArrows={arrows}
-                onSquareClick={dropPiece}
-                onMouseOverSquare={mouseOver}
-                onMouseOutSquare={mouseOut}
-                customSquareStyles={{ ...options }}
-            />
-            <button onClick={finishTour}>Complete Tour</button>
-            <button onClick={undo}>Undo</button>
-            <button onClick={() => setArrows(genArrows(tour.visitedStr))}>
-                Show path
-            </button>
-            {isFirst ? (
-                <button onClick={randomStart}>Random Start</button>
-            ) : null}
-            {tour.completed !== null ? (
-                <button onClick={visualiseComplete}>Visualise</button>
-            ) : null}
-            {tour.visited.length !== 0 ? (
-                <button onClick={reset}>Reset</button>
-            ) : null}
-            <CompletedPanel tour={tour} impossible={impossible} />
-        </div>
+        <Container className="container">
+            <Grid container>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Chessboard
+                        position={tour.fen}
+                        isDraggablePiece={isDraggable}
+                        onPieceDrop={onDrop}
+                        customArrows={arrows}
+                        onSquareClick={dropPiece}
+                        onMouseOverSquare={mouseOver}
+                        onMouseOutSquare={mouseOut}
+                        customSquareStyles={{ ...options }}
+                        customBoardStyle={{
+                            borderRadius: "4px",
+                            boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
+                        }}
+                        customDarkSquareStyle={{ background: "#90a2ad" }}
+                        customLightSquareStyle={{ background: "#dfe3e6" }}
+                    />
+                    <ButtonGroup
+                        variant="contained"
+                        className="controls"
+                        // orientation="vertical"
+                    >
+                        {isFirst ? (
+                            <Button onClick={randomStart}>Random Start</Button>
+                        ) : null}
+
+                        {tour.visited.length !== 0 ? (
+                            <Button
+                                disabled={
+                                    tour.completed !== null ||
+                                    tour.visited.length === 64
+                                }
+                                onClick={finishTour}
+                            >
+                                Complete Tour
+                            </Button>
+                        ) : null}
+
+                        {tour.completed !== null ? (
+                            <Button onClick={visualiseComplete}>
+                                Visualise
+                            </Button>
+                        ) : null}
+
+                        {tour.visited.length !== 0 ? (
+                            <Button
+                                onClick={() =>
+                                    setArrows(genArrows(tour.visitedStr))
+                                }
+                            >
+                                Show path
+                            </Button>
+                        ) : null}
+
+                        {tour.visited.length !== 0 ? (
+                            <Button onClick={undo}>Undo</Button>
+                        ) : null}
+
+                        {tour.visited.length !== 0 ? (
+                            <Button onClick={reset}>Reset</Button>
+                        ) : null}
+                    </ButtonGroup>
+                </Grid>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Status tour={tour} completed={completed} />
+                    <Moves tour={tour} />
+                </Grid>
+            </Grid>
+            {/* <CompletedPanel tour={tour} impossible={impossible} /> */}
+        </Container>
     );
 }
 

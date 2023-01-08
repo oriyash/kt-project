@@ -1,4 +1,5 @@
 import { makeMoveStr } from "./tour";
+import PropTypes from "prop-types";
 
 function CompletedPanel({ tour, impossible }) {
     if (
@@ -14,8 +15,8 @@ function CompletedPanel({ tour, impossible }) {
 }
 
 CompletedPanel.propTypes = {
-    tour: Object,
-    impossible: Boolean,
+    tour: PropTypes.object,
+    impossible: PropTypes.bool,
 };
 
 export default CompletedPanel;

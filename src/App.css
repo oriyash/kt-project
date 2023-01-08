@@ -1,0 +1,18 @@
+.container {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #333333;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+
+.centered {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.controls {
+    margin-top:10px ;
+}

@@ -18,7 +18,13 @@ import {
 import Moves from "./Moves";
 import "./App.css";
 import { Container } from "@mui/system";
-import { Button, ButtonGroup, Grid } from "@mui/material";
+import {
+    Button,
+    ButtonGroup,
+    FormControlLabel,
+    Grid,
+    Switch,
+} from "@mui/material";
 import Status from "./Status";
 
 function App() {
@@ -29,14 +35,14 @@ function App() {
         visited: [],
         visitedStr: [],
         validMoves: [],
+        lastTour: null,
         completed: null,
     });
 
-    const [lastTour, setLastTour] = useState(null);
-    // const [impossible, setImpossible] = useState(false);
     const [arrows, setArrows] = useState([]);
     const [options, setOptions] = useState({});
     const [completed, setCompleted] = useState(false);
+    const [showBest, setShowBest] = useState(false);
 
     const isDraggable = (piece) =>
         piece.piece === "wN" && tour.visited.length !== 64 ? true : false;
@@ -53,8 +59,9 @@ function App() {
             newTour.visitedStr = [...newTour.visitedStr, tgtSt];
             newTour.validMoves = updateValids(tour, tgtSt, tgt);
             newTour.fen = updateFen(newTour.visited);
+            newTour.lastTour = cloneDeep(tour);
+            newTour.lastTour.completed = null;
             // console.log(newTour);
-            setLastTour(tour);
             setTour(newTour);
             if (newTour.visited.length === 64) {
                 setCompleted(true);
@@ -92,7 +99,7 @@ function App() {
             });
 
             const bestMove = getSq(findBestMove(tour));
-            if (bestMove !== null) {
+            if (bestMove !== null && showBest) {
                 if (
                     newSquares[bestMove].background !==
                         "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
@@ -131,16 +138,19 @@ function App() {
             visited: [],
             visitedStr: [],
             validMoves: [],
+            lastTour: null,
             completed: null,
         });
-        setLastTour(null);
         setIsFirst(true);
     };
 
-    //this is broken
     const undo = () => {
-        lastTour !== null ? setTour(lastTour) : setLastTour(null);
-        // setImpossible(false);
+        if (tour.lastTour !== null) {
+            setTour(tour.lastTour);
+        } else if (tour.visited.length === 1) {
+            reset();
+        }
+        setCompleted(false);
     };
 
     const dropPiece = (square) => {
@@ -274,6 +284,16 @@ function App() {
                             <Button onClick={reset}>Reset</Button>
                         ) : null}
                     </ButtonGroup>
+                    <FormControlLabel
+                        label="Show least degree move"
+                        control={
+                            <Switch
+                                onChange={() => {
+                                    setShowBest(!showBest);
+                                }}
+                            />
+                        }
+                    />
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
                     <Status tour={tour} completed={completed} />

@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import PropTypes from "prop-types";
 
 function Status({ tour, completed }) {
     if (tour.visited.length === 0) {
@@ -21,5 +22,7 @@ function Status({ tour, completed }) {
         );
     }
 }
+
+Status.propTypes = { tour: PropTypes.object, completed: PropTypes.bool };
 
 export default Status;

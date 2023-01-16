@@ -29,11 +29,10 @@ function App() {
         visited: [],
         visitedStr: [],
         validMoves: [],
+        lastTour: null,
         completed: null,
     });
 
-    const [lastTour, setLastTour] = useState(null);
-    // const [impossible, setImpossible] = useState(false);
     const [arrows, setArrows] = useState([]);
     const [options, setOptions] = useState({});
     const [completed, setCompleted] = useState(false);
@@ -53,8 +52,9 @@ function App() {
             newTour.visitedStr = [...newTour.visitedStr, tgtSt];
             newTour.validMoves = updateValids(tour, tgtSt, tgt);
             newTour.fen = updateFen(newTour.visited);
+            newTour.lastTour = cloneDeep(tour);
+            newTour.lastTour.completed = null;
             // console.log(newTour);
-            setLastTour(tour);
             setTour(newTour);
             if (newTour.visited.length === 64) {
                 setCompleted(true);
@@ -131,16 +131,19 @@ function App() {
             visited: [],
             visitedStr: [],
             validMoves: [],
+            lastTour: null,
             completed: null,
         });
-        setLastTour(null);
         setIsFirst(true);
     };
 
-    //this is broken
     const undo = () => {
-        lastTour !== null ? setTour(lastTour) : setLastTour(null);
-        // setImpossible(false);
+        if (tour.lastTour !== null) {
+            setTour(tour.lastTour);
+        } else if (tour.visited.length === 1) {
+            reset();
+        }
+        setCompleted(false);
     };
 
     const dropPiece = (square) => {

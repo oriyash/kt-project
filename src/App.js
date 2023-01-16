@@ -18,7 +18,13 @@ import {
 import Moves from "./Moves";
 import "./App.css";
 import { Container } from "@mui/system";
-import { Button, ButtonGroup, Grid } from "@mui/material";
+import {
+    Button,
+    ButtonGroup,
+    FormControlLabel,
+    Grid,
+    Switch,
+} from "@mui/material";
 import Status from "./Status";
 
 function App() {
@@ -36,6 +42,7 @@ function App() {
     const [arrows, setArrows] = useState([]);
     const [options, setOptions] = useState({});
     const [completed, setCompleted] = useState(false);
+    const [showBest, setShowBest] = useState(false);
 
     const isDraggable = (piece) =>
         piece.piece === "wN" && tour.visited.length !== 64 ? true : false;
@@ -92,7 +99,7 @@ function App() {
             });
 
             const bestMove = getSq(findBestMove(tour));
-            if (bestMove !== null) {
+            if (bestMove !== null && showBest) {
                 if (
                     newSquares[bestMove].background !==
                         "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
@@ -277,6 +284,16 @@ function App() {
                             <Button onClick={reset}>Reset</Button>
                         ) : null}
                     </ButtonGroup>
+                    <FormControlLabel
+                        label="Show least degree move"
+                        control={
+                            <Switch
+                                onChange={() => {
+                                    setShowBest(!showBest);
+                                }}
+                            />
+                        }
+                    />
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
                     <Status tour={tour} completed={completed} />

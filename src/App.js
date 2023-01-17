@@ -45,7 +45,9 @@ function App() {
     const [showBest, setShowBest] = useState(false);
 
     const isDraggable = (piece) =>
-        piece.piece === "wN" && tour.visited.length !== 64 ? true : false;
+        piece.piece === "wN" && tour.visited.length !== 64 && completed !== null
+            ? true
+            : false;
 
     const onDrop = (srcSt, tgtSt, piece) => {
         // console.log(`${piece} from ${srcSt} to ${tgtSt}`);

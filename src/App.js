@@ -144,6 +144,7 @@ function App() {
             completed: null,
         });
         setIsFirst(true);
+        setCompleted(false);
     };
 
     const undo = () => {

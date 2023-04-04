@@ -26,6 +26,7 @@ import {
     Switch,
 } from "@mui/material";
 import Status from "./Status";
+import { Link as RouterLink } from "react-router-dom";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -286,6 +287,9 @@ function App() {
                         {tour.visited.length !== 0 ? (
                             <Button onClick={reset}>Reset</Button>
                         ) : null}
+                        <Button>
+                            <RouterLink to={"/rules"}>Instructions</RouterLink>
+                        </Button>
                     </ButtonGroup>
                     <FormControlLabel
                         label="Show least degree move"

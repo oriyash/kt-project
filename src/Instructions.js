@@ -1,7 +1,13 @@
 import "./Instructions.css";
+import NavButton from "./NavButton";
 
 function Instructions() {
-    return <h1>This is the instrctions page</h1>;
+    return (
+        <div>
+            <h1>This is the instrctions page</h1>
+            <NavButton to={"/"}>Home</NavButton>
+        </div>
+    );
 }
 
 export default Instructions;

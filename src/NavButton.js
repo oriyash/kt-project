@@ -9,10 +9,19 @@ function NavButton(props) {
     };
 
     return (
-        <Button onClick={() => handleClick(props.to)}>{props.children}</Button>
+        <Button
+            variant={"variant" in props ? props.variant : "contained"}
+            onClick={() => handleClick(props.to)}
+        >
+            {props.children}
+        </Button>
     );
 }
 
-NavButton.propTypes = { to: PropTypes.string, children: PropTypes.string };
+NavButton.propTypes = {
+    to: PropTypes.string,
+    children: PropTypes.string,
+    variant: PropTypes.string,
+};
 
 export default NavButton;

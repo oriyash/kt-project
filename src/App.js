@@ -287,8 +287,6 @@ function App() {
                         {tour.visited.length !== 0 ? (
                             <Button onClick={reset}>Reset</Button>
                         ) : null}
-
-                        <NavButton to="/rules">Instructions</NavButton>
                     </ButtonGroup>
                     <FormControlLabel
                         label="Show least degree move"
@@ -301,9 +299,13 @@ function App() {
                         }
                     />
                 </Grid>
-                <Grid item xs={12} md={6} lg={6}>
+                <Grid item xs={12} md={6} lg={6} id="right">
                     <Status tour={tour} completed={completed} />
                     <Moves tour={tour} />
+                    <ButtonGroup variant="contained" className="controls">
+                        <NavButton to="/simulation">Simulate!</NavButton>
+                        <NavButton to="/rules">Instructions</NavButton>
+                    </ButtonGroup>
                 </Grid>
             </Grid>
             {/* <CompletedPanel tour={tour} impossible={impossible} /> */}

@@ -14,7 +14,6 @@ import {
     getSq,
     findBestMove,
 } from "./tour";
-// import CompletedPanel from "./CompletedPanel";
 import Moves from "./Moves";
 import "./App.css";
 import { Container } from "@mui/system";
@@ -308,7 +307,6 @@ function App() {
                     </ButtonGroup>
                 </Grid>
             </Grid>
-            {/* <CompletedPanel tour={tour} impossible={impossible} /> */}
         </Container>
     );
 }

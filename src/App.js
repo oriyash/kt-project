@@ -251,6 +251,10 @@ function App() {
                             <Button onClick={randomStart}>Random Start</Button>
                         ) : null}
 
+                        {isFirst ? (
+                            <NavButton to={"/rules"}>Tutorial</NavButton>
+                        ) : null}
+
                         {tour.visited.length !== 0 ? (
                             <Button
                                 disabled={
@@ -303,8 +307,6 @@ function App() {
                     <Moves tour={tour} />
                     <ButtonGroup variant="contained" className="controls">
                         <NavButton to="/simulation">Simulate!</NavButton>
-                        <NavButton to="/rules">Instructions</NavButton>
-                    </ButtonGroup>
                 </Grid>
             </Grid>
         </Container>

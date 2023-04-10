@@ -239,8 +239,8 @@ function App() {
                             borderRadius: "4px",
                             boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
                         }}
-                        customDarkSquareStyle={{ background: "#90a2ad" }}
-                        customLightSquareStyle={{ background: "#dfe3e6" }}
+                        customDarkSquareStyle={{ background: "#4D4D4D" }}
+                        customLightSquareStyle={{ background: "#FFF4E0" }}
                     />
                     <ButtonGroup
                         variant="contained"

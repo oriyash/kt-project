@@ -255,16 +255,12 @@ function App() {
                             <NavButton to={"/rules"}>Tutorial</NavButton>
                         ) : null}
 
-                        {tour.visited.length !== 0 ? (
-                            <Button
-                                disabled={
-                                    tour.completed !== null ||
-                                    tour.visited.length === 64
-                                }
-                                onClick={finishTour}
-                            >
-                                Complete Tour
-                            </Button>
+                        {tour.visited.length !== 0 &&
+                        !(
+                            tour.completed !== null ||
+                            tour.visited.length === 64
+                        ) ? (
+                            <Button onClick={finishTour}>Complete Tour</Button>
                         ) : null}
 
                         {tour.completed !== null ? (

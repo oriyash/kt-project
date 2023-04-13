@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import Status from "./Status";
 import NavButton from "./NavButton";
+import ProposedSolution from "./ProposedSolution";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -280,7 +281,7 @@ function App() {
                             </Button>
                         ) : null}
 
-                        {tour.visited.length > 1 ? (
+                        {1 < tour.visited.length && tour.visited.length < 64 ? (
                             <Button onClick={undo}>Undo</Button>
                         ) : null}
 
@@ -302,8 +303,8 @@ function App() {
                 <Grid item xs={12} md={6} lg={6} id="right">
                     <Status tour={tour} completed={completed} />
                     <Moves tour={tour} />
-                    <ButtonGroup variant="contained" className="controls">
-                        <NavButton to="/simulation">Simulate!</NavButton>
+                    <ProposedSolution tour={tour} />
+                    <NavButton to="/simulation">Simulate!</NavButton>
                 </Grid>
             </Grid>
         </Container>

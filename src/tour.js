@@ -423,14 +423,6 @@ export function getSq(num) {
     }
 }
 
-export function makeMoveStr(visitedStr) {
-    let line = "";
-    visitedStr.forEach(
-        (val, index) => (line = line.concat(`${index + 1}.${val} `))
-    );
-    return line;
-}
-
 export function genArrows(visitedStr) {
     let arrows = [];
     for (let i = 1; i < visitedStr.length; i++) {

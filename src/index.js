@@ -5,17 +5,23 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Instructions from "./Instructions";
+import Simulation from "./Simulation";
+import { theme } from "./theme";
+import { ThemeProvider } from "@mui/material";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const router = createBrowserRouter([
     { path: "/", element: <App /> },
     { path: "/rules", element: <Instructions /> },
+    { path: "/simulation", element: <Simulation /> },
 ]);
 
 root.render(
     <React.StrictMode>
-        <RouterProvider router={router} />
+        <ThemeProvider theme={theme}>
+            <RouterProvider router={router} />
+        </ThemeProvider>
     </React.StrictMode>
 );
 

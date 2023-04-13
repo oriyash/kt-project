@@ -14,7 +14,6 @@ import {
     getSq,
     findBestMove,
 } from "./tour";
-// import CompletedPanel from "./CompletedPanel";
 import Moves from "./Moves";
 import "./App.css";
 import { Container } from "@mui/system";
@@ -27,6 +26,7 @@ import {
 } from "@mui/material";
 import Status from "./Status";
 import NavButton from "./NavButton";
+import ProposedSolution from "./ProposedSolution";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -64,12 +64,15 @@ function App() {
             newTour.fen = updateFen(newTour.visited);
             newTour.lastTour = cloneDeep(tour);
             newTour.lastTour.completed = null;
+            newTour.completed = null;
             // console.log(newTour);
             setTour(newTour);
             if (newTour.visited.length === 64) {
                 setCompleted(true);
             } else if (newTour.validMoves.length === 0) {
                 setCompleted(null);
+            } else {
+                setCompleted(false);
             }
             return true;
         } else {
@@ -151,8 +154,6 @@ function App() {
     const undo = () => {
         if (tour.lastTour !== null) {
             setTour(tour.lastTour);
-        } else if (tour.visited.length === 1) {
-            reset();
         }
         setCompleted(false);
     };
@@ -240,8 +241,8 @@ function App() {
                             borderRadius: "4px",
                             boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
                         }}
-                        customDarkSquareStyle={{ background: "#90a2ad" }}
-                        customLightSquareStyle={{ background: "#dfe3e6" }}
+                        customDarkSquareStyle={{ background: "#4D4D4D" }}
+                        customLightSquareStyle={{ background: "#FFF4E0" }}
                     />
                     <ButtonGroup
                         variant="contained"
@@ -252,16 +253,16 @@ function App() {
                             <Button onClick={randomStart}>Random Start</Button>
                         ) : null}
 
-                        {tour.visited.length !== 0 ? (
-                            <Button
-                                disabled={
-                                    tour.completed !== null ||
-                                    tour.visited.length === 64
-                                }
-                                onClick={finishTour}
-                            >
-                                Complete Tour
-                            </Button>
+                        {isFirst ? (
+                            <NavButton to={"/rules"}>Tutorial</NavButton>
+                        ) : null}
+
+                        {tour.visited.length !== 0 &&
+                        !(
+                            tour.completed !== null ||
+                            tour.visited.length === 64
+                        ) ? (
+                            <Button onClick={finishTour}>Complete Tour</Button>
                         ) : null}
 
                         {tour.completed !== null ? (
@@ -270,7 +271,7 @@ function App() {
                             </Button>
                         ) : null}
 
-                        {tour.visited.length !== 0 ? (
+                        {tour.visited.length > 1 ? (
                             <Button
                                 onClick={() =>
                                     setArrows(genArrows(tour.visitedStr))
@@ -280,15 +281,13 @@ function App() {
                             </Button>
                         ) : null}
 
-                        {tour.visited.length !== 0 ? (
+                        {1 < tour.visited.length && tour.visited.length < 64 ? (
                             <Button onClick={undo}>Undo</Button>
                         ) : null}
 
                         {tour.visited.length !== 0 ? (
                             <Button onClick={reset}>Reset</Button>
                         ) : null}
-
-                        <NavButton to="/rules">Instructions</NavButton>
                     </ButtonGroup>
                     <FormControlLabel
                         label="Show least degree move"
@@ -301,12 +300,13 @@ function App() {
                         }
                     />
                 </Grid>
-                <Grid item xs={12} md={6} lg={6}>
+                <Grid item xs={12} md={6} lg={6} id="right">
                     <Status tour={tour} completed={completed} />
                     <Moves tour={tour} />
+                    <ProposedSolution tour={tour} />
+                    <NavButton to="/simulation">Simulate!</NavButton>
                 </Grid>
             </Grid>
-            {/* <CompletedPanel tour={tour} impossible={impossible} /> */}
         </Container>
     );
 }

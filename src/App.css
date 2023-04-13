@@ -1,7 +1,7 @@
 .container {
     padding: 20px;
     border-radius: 10px;
-    background-color: #333333;
+    background-color: #B46060;
     color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -15,4 +15,8 @@
 
 .controls {
     margin-top:10px ;
+}
+
+.title {
+    text-align: center;
 }

@@ -153,8 +153,6 @@ function App() {
     const undo = () => {
         if (tour.lastTour !== null) {
             setTour(tour.lastTour);
-        } else if (tour.visited.length === 1) {
-            reset();
         }
         setCompleted(false);
     };
@@ -282,7 +280,7 @@ function App() {
                             </Button>
                         ) : null}
 
-                        {tour.visited.length !== 0 ? (
+                        {tour.visited.length > 1 ? (
                             <Button onClick={undo}>Undo</Button>
                         ) : null}
 

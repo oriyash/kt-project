@@ -63,12 +63,15 @@ function App() {
             newTour.fen = updateFen(newTour.visited);
             newTour.lastTour = cloneDeep(tour);
             newTour.lastTour.completed = null;
+            newTour.completed = null;
             // console.log(newTour);
             setTour(newTour);
             if (newTour.visited.length === 64) {
                 setCompleted(true);
             } else if (newTour.validMoves.length === 0) {
                 setCompleted(null);
+            } else {
+                setCompleted(false);
             }
             return true;
         } else {

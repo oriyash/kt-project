@@ -270,7 +270,7 @@ function App() {
                             </Button>
                         ) : null}
 
-                        {tour.visited.length !== 0 ? (
+                        {tour.visited.length > 1 ? (
                             <Button
                                 onClick={() =>
                                     setArrows(genArrows(tour.visitedStr))

@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import {
     completeTour,
@@ -45,6 +45,19 @@ function App() {
     const [completed, setCompleted] = useState(false);
     const [showBest, setShowBest] = useState(false);
 
+    useEffect(() => {
+        if (tour.visited.length === 0) {
+            setCompleted(false);
+            setIsFirst(true);
+        } else if (tour.visited.length === 64) {
+            setCompleted(true);
+        } else if (tour.validMoves.length === 0) {
+            setCompleted(null);
+        } else {
+            setCompleted(false);
+        }
+    }, [tour]);
+
     const isDraggable = (piece) =>
         piece.piece === "wN" && tour.visited.length !== 64 && completed !== null
             ? true
@@ -67,13 +80,6 @@ function App() {
             newTour.completed = null;
             // console.log(newTour);
             setTour(newTour);
-            if (newTour.visited.length === 64) {
-                setCompleted(true);
-            } else if (newTour.validMoves.length === 0) {
-                setCompleted(null);
-            } else {
-                setCompleted(false);
-            }
             return true;
         } else {
             return false;
@@ -131,7 +137,6 @@ function App() {
         if (completed !== null) {
             const newTour = cloneDeep(tour);
             newTour.completed = completed;
-            setCompleted(true);
             setTour(newTour);
         } else {
             setCompleted(null);
@@ -147,15 +152,12 @@ function App() {
             lastTour: null,
             completed: null,
         });
-        setIsFirst(true);
-        setCompleted(false);
     };
 
     const undo = () => {
         if (tour.lastTour !== null) {
             setTour(tour.lastTour);
         }
-        setCompleted(false);
     };
 
     const dropPiece = (square) => {

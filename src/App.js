@@ -77,8 +77,13 @@ function App() {
             newTour.fen = updateFen(newTour.visited);
             newTour.lastTour = cloneDeep(tour);
             newTour.lastTour.completed = null;
-            newTour.completed = null;
-            // console.log(newTour);
+
+            if (newTour.completed !== null && tgt === findBestMove(tour)) {
+                newTour.completed = completeTour(newTour);
+            } else {
+                newTour.completed = null;
+            }
+
             setTour(newTour);
             return true;
         } else {

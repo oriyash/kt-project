@@ -27,6 +27,7 @@ import {
 import Status from "./Status";
 import NavButton from "./NavButton";
 import ProposedSolution from "./ProposedSolution";
+import IsClosable from "./IsClosable";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -310,6 +311,7 @@ function App() {
                 <Grid item xs={12} md={6} lg={6} id="right">
                     <Status tour={tour} completed={completed} />
                     <Moves tour={tour} />
+                    <IsClosable tour={tour} />
                     <ProposedSolution tour={tour} />
                     <NavButton to="/simulation">Simulate!</NavButton>
                 </Grid>

@@ -1,13 +1,13 @@
-import "./Instructions.css";
+import "./Tutorial.css";
 import NavButton from "./NavButton";
 
-function Instructions() {
+function Tutorial() {
     return (
         <div>
-            <h1>This is the instrctions page</h1>
+            <h1>This is the Tutorial</h1>
             <NavButton to={"/"}>Home</NavButton>
         </div>
     );
 }
 
-export default Instructions;
+export default Tutorial;

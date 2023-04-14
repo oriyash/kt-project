@@ -261,7 +261,7 @@ function App() {
                         ) : null}
 
                         {isFirst ? (
-                            <NavButton to={"/rules"}>Tutorial</NavButton>
+                            <NavButton to={"/tutorial"}>Tutorial</NavButton>
                         ) : null}
 
                         {tour.visited.length !== 0 &&

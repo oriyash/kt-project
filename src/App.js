@@ -234,7 +234,7 @@ function App() {
 
     return (
         <Container className="container">
-            <Grid container>
+            <Grid container spacing={5}>
                 <Grid item xs={12} md={6} lg={6}>
                     <Chessboard
                         position={tour.fen}

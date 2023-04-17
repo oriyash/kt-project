@@ -245,12 +245,11 @@ function App() {
                         onMouseOverSquare={mouseOver}
                         onMouseOutSquare={mouseOut}
                         customSquareStyles={{ ...options }}
-                        customBoardStyle={{
-                            borderRadius: "4px",
-                            boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
-                        }}
-                        customDarkSquareStyle={{ background: "#4D4D4D" }}
-                        customLightSquareStyle={{ background: "#FFF4E0" }}
+                        customBoardStyle={boardTheme.customBoardStyle}
+                        customDarkSquareStyle={boardTheme.customDarkSquareStyle}
+                        customLightSquareStyle={
+                            boardTheme.customLightSquareStyle
+                        }
                     />
                     <ButtonGroup
                         variant="contained"
@@ -319,5 +318,14 @@ function App() {
         </Container>
     );
 }
+
+export const boardTheme = {
+    customBoardStyle: {
+        borderRadius: "4px",
+        boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
+    },
+    customLightSquareStyle: { background: "#4D4D4D" },
+    customDarkSquareStyle: { background: "#FFF4E0" },
+};
 
 export default App;

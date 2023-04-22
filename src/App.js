@@ -277,7 +277,8 @@ function App() {
                         {tour.visited.length !== 0 &&
                         !(
                             tour.completed !== null ||
-                            tour.visited.length === 64
+                            tour.visited.length === 64 ||
+                            tour.validMoves.length === 0
                         ) ? (
                             <Button onClick={finishTour}>Complete Tour</Button>
                         ) : null}

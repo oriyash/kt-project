@@ -11,7 +11,10 @@ function IsClosable({ tour }) {
         );
         if (lastValids.includes(firstMove)) {
             return (
-                <Typography variant="h4">This tour can be closed</Typography>
+                <Typography variant="h4">
+                    This tour can be closed with the move{" "}
+                    {tour.visitedStr.slice(-1)[0]} to {tour.visitedStr[0]}
+                </Typography>
             );
         } else {
             return <Typography variant="h4">This is an open tour</Typography>;

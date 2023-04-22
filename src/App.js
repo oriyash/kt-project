@@ -283,7 +283,8 @@ function App() {
                             <Button onClick={finishTour}>Complete Tour</Button>
                         ) : null}
 
-                        {tour.completed !== null ? (
+                        {tour.completed !== null &&
+                        tour.visited.length !== 64 ? (
                             <Button onClick={visualiseComplete}>
                                 Visualise
                             </Button>

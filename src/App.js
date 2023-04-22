@@ -305,7 +305,11 @@ function App() {
                         ) : null}
 
                         {tour.visited.length !== 0 ? (
-                            <Button onClick={reset}>Reset</Button>
+                            <Button onClick={reset}>
+                                {tour.visited.length === 64
+                                    ? "Play again"
+                                    : "Reset"}
+                            </Button>
                         ) : null}
                     </ButtonGroup>
                     <FormControlLabel

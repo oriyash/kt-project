@@ -4,8 +4,14 @@ import { cloneDeep } from "lodash";
 import { Chip, Typography, Avatar } from "@mui/material";
 
 function ProposedSolution({ tour }) {
-    if (tour.completed === null) {
+    if (tour.completed === undefined) {
         return null;
+    } else if (tour.completed === null) {
+        return (
+            <Typography variant="h4">
+                No solution found with Warnsdorff Heuristic
+            </Typography>
+        );
     } else {
         let moves = cloneDeep(tour.completed.visitedStr);
         moves = moves.slice(tour.visitedStr.length);

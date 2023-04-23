@@ -38,7 +38,7 @@ function App() {
         visitedStr: [],
         validMoves: [],
         lastTour: null,
-        completed: null,
+        completed: undefined,
     });
 
     const [arrows, setArrows] = useState([]);
@@ -77,12 +77,12 @@ function App() {
             newTour.validMoves = updateValids(tour, tgtSt, tgt);
             newTour.fen = updateFen(newTour.visited);
             newTour.lastTour = cloneDeep(tour);
-            newTour.lastTour.completed = null;
+            newTour.lastTour.completed = undefined;
 
-            if (newTour.completed !== null && tgt === findBestMove(tour)) {
+            if (newTour.completed && tgt === findBestMove(tour)) {
                 newTour.completed = completeTour(newTour);
             } else {
-                newTour.completed = null;
+                newTour.completed = undefined;
             }
 
             setTour(newTour);
@@ -149,14 +149,9 @@ function App() {
 
     const finishTour = () => {
         const completed = completeTour(tour);
-
-        if (completed !== null) {
-            const newTour = cloneDeep(tour);
-            newTour.completed = completed;
-            setTour(newTour);
-        } else {
-            setCompleted(null);
-        }
+        const newTour = cloneDeep(tour);
+        newTour.completed = completed;
+        setTour(newTour);
     };
 
     const reset = () => {
@@ -166,7 +161,7 @@ function App() {
             visitedStr: [],
             validMoves: [],
             lastTour: null,
-            completed: null,
+            completed: undefined,
         });
     };
 
@@ -214,7 +209,7 @@ function App() {
 
     const visualiseComplete = async () => {
         // console.log(tour);
-        if (tour.completed !== null) {
+        if (tour.completed) {
             let visiteds = [];
 
             for (let i = tour.visited.length; i < 65; i++) {
@@ -276,15 +271,14 @@ function App() {
 
                         {tour.visited.length !== 0 &&
                         !(
-                            tour.completed !== null ||
+                            tour.completed ||
                             tour.visited.length === 64 ||
                             tour.validMoves.length === 0
                         ) ? (
                             <Button onClick={finishTour}>Complete Tour</Button>
                         ) : null}
 
-                        {tour.completed !== null &&
-                        tour.visited.length !== 64 ? (
+                        {tour.completed && tour.visited.length !== 64 ? (
                             <Button onClick={visualiseComplete}>
                                 Visualise
                             </Button>

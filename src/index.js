@@ -5,7 +5,6 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Tutorial from "./Tutorial";
-import Simulation from "./Simulation";
 import { theme } from "./theme";
 import { ThemeProvider } from "@mui/material";
 
@@ -14,7 +13,6 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
     { path: "/", element: <App /> },
     { path: "/tutorial", element: <Tutorial /> },
-    { path: "/simulation", element: <Simulation /> },
 ]);
 
 root.render(

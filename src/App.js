@@ -328,7 +328,6 @@ function App() {
                     <Moves tour={tour} />
                     <IsClosable tour={tour} />
                     <ProposedSolution tour={tour} />
-                    <NavButton to="/simulation">Simulate!</NavButton>
                 </Grid>
             </Grid>
         </Container>

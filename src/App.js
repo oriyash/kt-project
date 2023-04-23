@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import {
     completeTour,
@@ -27,6 +27,7 @@ import {
 import Status from "./Status";
 import NavButton from "./NavButton";
 import ProposedSolution from "./ProposedSolution";
+import IsClosable from "./IsClosable";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -37,13 +38,27 @@ function App() {
         visitedStr: [],
         validMoves: [],
         lastTour: null,
-        completed: null,
+        completed: undefined,
     });
 
     const [arrows, setArrows] = useState([]);
     const [options, setOptions] = useState({});
     const [completed, setCompleted] = useState(false);
     const [showBest, setShowBest] = useState(false);
+    const [kq, setKq] = useState(false);
+
+    useEffect(() => {
+        if (tour.visited.length === 0) {
+            setCompleted(false);
+            setIsFirst(true);
+        } else if (tour.visited.length === 64) {
+            setCompleted(true);
+        } else if (tour.validMoves.length === 0) {
+            setCompleted(null);
+        } else {
+            setCompleted(false);
+        }
+    }, [tour]);
 
     const isDraggable = (piece) =>
         piece.piece === "wN" && tour.visited.length !== 64 && completed !== null
@@ -61,19 +76,17 @@ function App() {
             newTour.visited = [...newTour.visited, tgt];
             newTour.visitedStr = [...newTour.visitedStr, tgtSt];
             newTour.validMoves = updateValids(tour, tgtSt, tgt);
-            newTour.fen = updateFen(newTour.visited);
+            newTour.fen = updateFen(newTour.visited, kq);
             newTour.lastTour = cloneDeep(tour);
-            newTour.lastTour.completed = null;
-            newTour.completed = null;
-            // console.log(newTour);
-            setTour(newTour);
-            if (newTour.visited.length === 64) {
-                setCompleted(true);
-            } else if (newTour.validMoves.length === 0) {
-                setCompleted(null);
+
+            if (newTour.completed && tgt === findBestMove(tour)) {
+                newTour.completed = completeTour(newTour);
             } else {
-                setCompleted(false);
+                newTour.lastTour.completed = undefined;
+                newTour.completed = undefined;
             }
+
+            setTour(newTour);
             return true;
         } else {
             return false;
@@ -81,43 +94,53 @@ function App() {
     };
 
     const mouseOver = (square) => {
-        if (square === tour.visitedStr.slice(-1)[0]) {
-            const validStr = tour.validMoves.map((value) => getSq(value));
-            const newSquares = {};
+        if (!isFirst) {
+            if (square === tour.visitedStr.slice(-1)[0]) {
+                const validStr = tour.validMoves.map((value) => getSq(value));
+                const newSquares = {};
 
-            newSquares[square] =
-                validStr.length !== 0 || tour.visited.length === 64
-                    ? { background: "rgba(255, 255, 0, 0.4)" }
-                    : { background: "rgba(255,0, 0, 0.4)" };
+                newSquares[square] =
+                    validStr.length !== 0 || tour.visited.length === 64
+                        ? { background: "rgba(255, 255, 0, 0.4)" }
+                        : { background: "rgba(255,0, 0, 0.4)" };
 
-            validStr.forEach((value) => {
-                updateValids(tour, value, makeNumber(value)).length !== 0 ||
-                tour.visited.length === 63
-                    ? (newSquares[value] = {
-                          background:
-                              "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
-                          borderRadius: "50%",
-                      })
-                    : (newSquares[value] = {
-                          background:
-                              "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)",
-                      });
-            });
+                validStr.forEach((value) => {
+                    updateValids(tour, value, makeNumber(value)).length !== 0 ||
+                    tour.visited.length === 63
+                        ? (newSquares[value] = {
+                              background:
+                                  "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
+                              borderRadius: "50%",
+                          })
+                        : (newSquares[value] = {
+                              background:
+                                  "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)",
+                          });
+                });
 
-            const bestMove = getSq(findBestMove(tour));
-            if (bestMove !== null && showBest) {
-                if (
-                    newSquares[bestMove].background !==
-                        "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
-                    newSquares[bestMove].background !== "rgba(255,0, 0, 0.4)"
-                ) {
-                    newSquares[bestMove] = {
-                        background:
-                            "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
-                    };
+                const bestMove = getSq(findBestMove(tour));
+                if (bestMove !== null && showBest) {
+                    if (
+                        newSquares[bestMove].background !==
+                            "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
+                        newSquares[bestMove].background !==
+                            "rgba(255,0, 0, 0.4)"
+                    ) {
+                        newSquares[bestMove] = {
+                            background:
+                                "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
+                        };
+                    }
                 }
+                setOptions(newSquares);
             }
-            setOptions(newSquares);
+        } else {
+            setOptions({
+                [square]: {
+                    background: "rgba(0,255,0,0.4)",
+                    cursor: "pointer",
+                },
+            });
         }
     };
 
@@ -127,15 +150,9 @@ function App() {
 
     const finishTour = () => {
         const completed = completeTour(tour);
-
-        if (completed !== null) {
-            const newTour = cloneDeep(tour);
-            newTour.completed = completed;
-            setCompleted(true);
-            setTour(newTour);
-        } else {
-            setCompleted(null);
-        }
+        const newTour = cloneDeep(tour);
+        newTour.completed = completed;
+        setTour(newTour);
     };
 
     const reset = () => {
@@ -145,17 +162,14 @@ function App() {
             visitedStr: [],
             validMoves: [],
             lastTour: null,
-            completed: null,
+            completed: undefined,
         });
-        setIsFirst(true);
-        setCompleted(false);
     };
 
     const undo = () => {
         if (tour.lastTour !== null) {
             setTour(tour.lastTour);
         }
-        setCompleted(false);
     };
 
     const dropPiece = (square) => {
@@ -196,14 +210,14 @@ function App() {
 
     const visualiseComplete = async () => {
         // console.log(tour);
-        if (tour.completed !== null) {
+        if (tour.completed) {
             let visiteds = [];
 
             for (let i = tour.visited.length; i < 65; i++) {
                 visiteds.push([...tour.completed.visited.slice(0, i)]);
             }
 
-            let fens = visiteds.map((val) => updateFen(val));
+            let fens = visiteds.map((val) => updateFen(val, kq));
 
             for (let fen of fens) {
                 const newTour = cloneDeep(tour);
@@ -222,11 +236,18 @@ function App() {
         }
     };
 
+    const changeKq = () => {
+        setKq(!kq);
+        const newTour = cloneDeep(tour);
+        newTour.fen = updateFen(newTour.visited, kq);
+        setTour(newTour);
+    };
+
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
     return (
         <Container className="container">
-            <Grid container>
+            <Grid container spacing={5}>
                 <Grid item xs={12} md={6} lg={6}>
                     <Chessboard
                         position={tour.fen}
@@ -237,12 +258,11 @@ function App() {
                         onMouseOverSquare={mouseOver}
                         onMouseOutSquare={mouseOut}
                         customSquareStyles={{ ...options }}
-                        customBoardStyle={{
-                            borderRadius: "4px",
-                            boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
-                        }}
-                        customDarkSquareStyle={{ background: "#4D4D4D" }}
-                        customLightSquareStyle={{ background: "#FFF4E0" }}
+                        customBoardStyle={boardTheme.customBoardStyle}
+                        customDarkSquareStyle={boardTheme.customDarkSquareStyle}
+                        customLightSquareStyle={
+                            boardTheme.customLightSquareStyle
+                        }
                     />
                     <ButtonGroup
                         variant="contained"
@@ -254,18 +274,19 @@ function App() {
                         ) : null}
 
                         {isFirst ? (
-                            <NavButton to={"/rules"}>Tutorial</NavButton>
+                            <NavButton to={"/tutorial"}>Tutorial</NavButton>
                         ) : null}
 
                         {tour.visited.length !== 0 &&
                         !(
-                            tour.completed !== null ||
-                            tour.visited.length === 64
+                            tour.completed ||
+                            tour.visited.length === 64 ||
+                            tour.validMoves.length === 0
                         ) ? (
                             <Button onClick={finishTour}>Complete Tour</Button>
                         ) : null}
 
-                        {tour.completed !== null ? (
+                        {tour.completed && tour.visited.length !== 64 ? (
                             <Button onClick={visualiseComplete}>
                                 Visualise
                             </Button>
@@ -286,7 +307,11 @@ function App() {
                         ) : null}
 
                         {tour.visited.length !== 0 ? (
-                            <Button onClick={reset}>Reset</Button>
+                            <Button onClick={reset}>
+                                {tour.visited.length === 64
+                                    ? "Play again"
+                                    : "Reset"}
+                            </Button>
                         ) : null}
                     </ButtonGroup>
                     <FormControlLabel
@@ -299,16 +324,31 @@ function App() {
                             />
                         }
                     />
+                    {isFirst ? (
+                        <FormControlLabel
+                            label="Use King/Queen"
+                            control={<Switch onChange={changeKq} />}
+                        />
+                    ) : null}
                 </Grid>
                 <Grid item xs={12} md={6} lg={6} id="right">
                     <Status tour={tour} completed={completed} />
                     <Moves tour={tour} />
+                    <IsClosable tour={tour} />
                     <ProposedSolution tour={tour} />
-                    <NavButton to="/simulation">Simulate!</NavButton>
                 </Grid>
             </Grid>
         </Container>
     );
 }
+
+export const boardTheme = {
+    customBoardStyle: {
+        borderRadius: "4px",
+        boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
+    },
+    customLightSquareStyle: { background: "#4D4D4D" },
+    customDarkSquareStyle: { background: "#FFF4E0" },
+};
 
 export default App;

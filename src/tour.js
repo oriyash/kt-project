@@ -70,14 +70,24 @@ export function initValids(srcSt, src) {
     // return vectors.filter((val) => !visited.includes(val));
 }
 
-export function updateFen(visited) {
+export function updateFen(visited, kq) {
     let fen = "";
     let line = "";
     let lastSeen = 0;
 
     for (let i = 0; i < 64; i++) {
         if (visited.includes(i)) {
-            const n = visited.indexOf(i) === visited.length - 1 ? "N" : "n";
+            const n = kq
+                ? visited.indexOf(i) === 0
+                    ? "K"
+                    : visited.indexOf(i) === 63
+                    ? "Q"
+                    : visited.indexOf(i) === visited.length - 1
+                    ? "N"
+                    : "n"
+                : visited.indexOf(i) === visited.length - 1
+                ? "N"
+                : "n";
 
             const pre = !lastSeen ? "" : lastSeen;
             line = line.concat(`${pre}${n}`);

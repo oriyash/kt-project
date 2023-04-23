@@ -3,22 +3,16 @@ import PropTypes from "prop-types";
 
 function Status({ tour, completed }) {
     if (tour.visited.length === 0) {
-        return <Typography variant="h2">Click anywhere to start!</Typography>;
-    } else if (completed === false) {
-        return <Typography variant="h3">Tour not completed</Typography>;
-    } else if (completed === null) {
-        return <Typography variant="h2">Tour impossible</Typography>;
-    } else if (completed && tour.completed !== null) {
         return (
-            <Typography variant="h2">
-                Completed with Warnsdorff Heuristic
-            </Typography>
+            <Typography variant="h3">Click on any square to start♟️</Typography>
         );
-    } else if (completed && tour.completed === null) {
+    } else if (tour.visited.length === 64) {
+        return <Typography variant="h3">Tour complete✅</Typography>;
+    } else if (tour.visited.length !== 0 && completed !== null) {
+        return <Typography variant="h3">Tour incomplete</Typography>;
+    } else if (tour.visited.length !== 0 && completed === null) {
         return (
-            <Typography variant="h2">
-                Congratulations you completed the tour
-            </Typography>
+            <Typography variant="h3">Tour impossible, try again 🥲</Typography>
         );
     }
 }

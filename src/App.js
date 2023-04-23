@@ -77,11 +77,11 @@ function App() {
             newTour.validMoves = updateValids(tour, tgtSt, tgt);
             newTour.fen = updateFen(newTour.visited);
             newTour.lastTour = cloneDeep(tour);
-            newTour.lastTour.completed = undefined;
 
             if (newTour.completed && tgt === findBestMove(tour)) {
                 newTour.completed = completeTour(newTour);
             } else {
+                newTour.lastTour.completed = undefined;
                 newTour.completed = undefined;
             }
 

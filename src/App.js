@@ -45,6 +45,7 @@ function App() {
     const [options, setOptions] = useState({});
     const [completed, setCompleted] = useState(false);
     const [showBest, setShowBest] = useState(false);
+    const [kq, setKq] = useState(false);
 
     useEffect(() => {
         if (tour.visited.length === 0) {
@@ -75,7 +76,7 @@ function App() {
             newTour.visited = [...newTour.visited, tgt];
             newTour.visitedStr = [...newTour.visitedStr, tgtSt];
             newTour.validMoves = updateValids(tour, tgtSt, tgt);
-            newTour.fen = updateFen(newTour.visited);
+            newTour.fen = updateFen(newTour.visited, kq);
             newTour.lastTour = cloneDeep(tour);
 
             if (newTour.completed && tgt === findBestMove(tour)) {
@@ -216,7 +217,7 @@ function App() {
                 visiteds.push([...tour.completed.visited.slice(0, i)]);
             }
 
-            let fens = visiteds.map((val) => updateFen(val));
+            let fens = visiteds.map((val) => updateFen(val, kq));
 
             for (let fen of fens) {
                 const newTour = cloneDeep(tour);
@@ -233,6 +234,13 @@ function App() {
                 await timer(500);
             }
         }
+    };
+
+    const changeKq = () => {
+        setKq(!kq);
+        const newTour = cloneDeep(tour);
+        newTour.fen = updateFen(newTour.visited, kq);
+        setTour(newTour);
     };
 
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -316,6 +324,12 @@ function App() {
                             />
                         }
                     />
+                    {isFirst ? (
+                        <FormControlLabel
+                            label="Use King/Queen"
+                            control={<Switch onChange={changeKq} />}
+                        />
+                    ) : null}
                 </Grid>
                 <Grid item xs={12} md={6} lg={6} id="right">
                     <Status tour={tour} completed={completed} />

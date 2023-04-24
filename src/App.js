@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import {
     completeTour,
@@ -48,6 +48,8 @@ function App() {
     const [kq, setKq] = useState(false);
     const [firstLast, setFirstLast] = useState();
     const [visualising, setVisualising] = useState(false);
+
+    const showArrowBtn = useRef(null);
 
     useEffect(() => {
         if (tour.visited.length === 0) {
@@ -162,7 +164,9 @@ function App() {
 
     const mouseOut = async () => {
         if (Object.keys(options).length !== 0) {
-            await timer(1000);
+            if (!isFirst) {
+                await timer(1000);
+            }
             setOptions({});
         }
     };
@@ -326,6 +330,7 @@ function App() {
 
                             {tour.visited.length > 1 ? (
                                 <Button
+                                    ref={showArrowBtn}
                                     onClick={() =>
                                         setArrows(genArrows(tour.visitedStr))
                                     }

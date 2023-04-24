@@ -185,7 +185,6 @@ function App() {
 
     const dropPiece = (square) => {
         if (isFirst) {
-            setIsFirst(false);
             const newTour = cloneDeep(tour);
 
             const init = sqToFen(square);
@@ -204,7 +203,6 @@ function App() {
 
     const randomStart = () => {
         if (isFirst) {
-            setIsFirst(false);
             const newTour = cloneDeep(tour);
 
             const init = makeFen();

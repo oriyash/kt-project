@@ -106,53 +106,57 @@ function App() {
     };
 
     const mouseOver = (square) => {
-        if (!isFirst) {
-            if (square === tour.visitedStr.slice(-1)[0]) {
-                const validStr = tour.validMoves.map((value) => getSq(value));
-                const newSquares = {};
+        if (!visualising) {
+            if (!isFirst) {
+                if (square === tour.visitedStr.slice(-1)[0]) {
+                    const validStr = tour.validMoves.map((value) =>
+                        getSq(value)
+                    );
+                    const newSquares = {};
 
-                newSquares[square] =
-                    validStr.length !== 0 || tour.visited.length === 64
-                        ? { background: "rgba(255, 255, 0, 0.4)" }
-                        : { background: "rgba(255,0, 0, 0.4)" };
+                    newSquares[square] =
+                        validStr.length !== 0 || tour.visited.length === 64
+                            ? { background: "rgba(255, 255, 0, 0.4)" }
+                            : { background: "rgba(255,0, 0, 0.4)" };
 
-                validStr.forEach((value) => {
-                    updateValids(tour, value, makeNumber(value)).length !== 0 ||
-                    tour.visited.length === 63
-                        ? (newSquares[value] = {
-                              background:
-                                  "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
-                              borderRadius: "50%",
-                          })
-                        : (newSquares[value] = {
-                              background:
-                                  "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)",
-                          });
-                });
+                    validStr.forEach((value) => {
+                        updateValids(tour, value, makeNumber(value)).length !==
+                            0 || tour.visited.length === 63
+                            ? (newSquares[value] = {
+                                  background:
+                                      "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
+                                  borderRadius: "50%",
+                              })
+                            : (newSquares[value] = {
+                                  background:
+                                      "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)",
+                              });
+                    });
 
-                const bestMove = getSq(findBestMove(tour));
-                if (bestMove !== null && showBest) {
-                    if (
-                        newSquares[bestMove].background !==
-                            "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
-                        newSquares[bestMove].background !==
-                            "rgba(255,0, 0, 0.4)"
-                    ) {
-                        newSquares[bestMove] = {
-                            background:
-                                "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
-                        };
+                    const bestMove = getSq(findBestMove(tour));
+                    if (bestMove !== null && showBest) {
+                        if (
+                            newSquares[bestMove].background !==
+                                "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
+                            newSquares[bestMove].background !==
+                                "rgba(255,0, 0, 0.4)"
+                        ) {
+                            newSquares[bestMove] = {
+                                background:
+                                    "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
+                            };
+                        }
                     }
+                    setOptions(newSquares);
                 }
-                setOptions(newSquares);
+            } else {
+                setOptions({
+                    [square]: {
+                        background: "rgba(0,255,0,0.4)",
+                        cursor: "pointer",
+                    },
+                });
             }
-        } else {
-            setOptions({
-                [square]: {
-                    background: "rgba(0,255,0,0.4)",
-                    cursor: "pointer",
-                },
-            });
         }
     };
 

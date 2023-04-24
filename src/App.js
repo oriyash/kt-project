@@ -160,8 +160,11 @@ function App() {
         }
     };
 
-    const mouseOut = () => {
-        if (Object.keys(options).length !== 0) setOptions({});
+    const mouseOut = async () => {
+        if (Object.keys(options).length !== 0) {
+            await timer(1000);
+            setOptions({});
+        }
     };
 
     const finishTour = () => {
@@ -188,7 +191,9 @@ function App() {
         }
     };
 
-    const dropPiece = (square) => {
+    const onSquareClick = (square) => {
+        const valids = tour.validMoves.map((value) => getSq(value));
+
         if (isFirst) {
             const newTour = cloneDeep(tour);
 
@@ -201,8 +206,10 @@ function App() {
             newTour.validMoves = initValids(square, makeNumber(square));
             newTour.fen = init.fen;
             setTour(newTour);
-        } else {
-            return null;
+        } else if (valids.includes(square)) {
+            onDrop(tour.visitedStr.slice(-1)[0], square, "wN");
+        } else if (square === tour.visitedStr.slice(-1)[0]) {
+            mouseOver(square);
         }
     };
 
@@ -270,7 +277,7 @@ function App() {
                         isDraggablePiece={isDraggable}
                         onPieceDrop={onDrop}
                         customArrows={arrows}
-                        onSquareClick={dropPiece}
+                        onSquareClick={onSquareClick}
                         onMouseOverSquare={mouseOver}
                         onMouseOutSquare={mouseOut}
                         customSquareStyles={

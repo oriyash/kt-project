@@ -65,6 +65,7 @@ function App() {
             setCompleted(null);
         } else {
             setCompleted(false);
+            setIsFirst(false);
         }
     }, [tour]);
 

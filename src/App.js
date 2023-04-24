@@ -46,6 +46,8 @@ function App() {
     const [completed, setCompleted] = useState(false);
     const [showBest, setShowBest] = useState(false);
     const [kq, setKq] = useState(false);
+    const [firstLast, setFirstLast] = useState();
+    const [visualising, setVisualising] = useState(false);
 
     useEffect(() => {
         if (tour.visited.length === 0) {
@@ -53,15 +55,25 @@ function App() {
             setIsFirst(true);
         } else if (tour.visited.length === 64) {
             setCompleted(true);
+            setFirstLast({
+                [tour.visitedStr[0]]: { background: "rgba(0,255,0,0.2)" },
+                [tour.visitedStr.slice(-1)[0]]: {
+                    background: "rgba(0,255,0,0.2)",
+                },
+            });
         } else if (tour.validMoves.length === 0) {
             setCompleted(null);
         } else {
             setCompleted(false);
+            setIsFirst(false);
         }
     }, [tour]);
 
     const isDraggable = (piece) =>
-        piece.piece === "wN" && tour.visited.length !== 64 && completed !== null
+        piece.piece === "wN" &&
+        tour.visited.length !== 64 &&
+        completed !== null &&
+        !visualising
             ? true
             : false;
 
@@ -94,58 +106,65 @@ function App() {
     };
 
     const mouseOver = (square) => {
-        if (!isFirst) {
-            if (square === tour.visitedStr.slice(-1)[0]) {
-                const validStr = tour.validMoves.map((value) => getSq(value));
-                const newSquares = {};
+        if (!visualising) {
+            if (!isFirst) {
+                if (square === tour.visitedStr.slice(-1)[0]) {
+                    const validStr = tour.validMoves.map((value) =>
+                        getSq(value)
+                    );
+                    const newSquares = {};
 
-                newSquares[square] =
-                    validStr.length !== 0 || tour.visited.length === 64
-                        ? { background: "rgba(255, 255, 0, 0.4)" }
-                        : { background: "rgba(255,0, 0, 0.4)" };
+                    newSquares[square] =
+                        validStr.length !== 0 || tour.visited.length === 64
+                            ? { background: "rgba(255, 255, 0, 0.4)" }
+                            : { background: "rgba(255,0, 0, 0.4)" };
 
-                validStr.forEach((value) => {
-                    updateValids(tour, value, makeNumber(value)).length !== 0 ||
-                    tour.visited.length === 63
-                        ? (newSquares[value] = {
-                              background:
-                                  "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
-                              borderRadius: "50%",
-                          })
-                        : (newSquares[value] = {
-                              background:
-                                  "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)",
-                          });
-                });
+                    validStr.forEach((value) => {
+                        updateValids(tour, value, makeNumber(value)).length !==
+                            0 || tour.visited.length === 63
+                            ? (newSquares[value] = {
+                                  background:
+                                      "radial-gradient(circle, rgba(0,0,0,.2) 25%, transparent 25%)",
+                                  borderRadius: "50%",
+                              })
+                            : (newSquares[value] = {
+                                  background:
+                                      "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)",
+                              });
+                    });
 
-                const bestMove = getSq(findBestMove(tour));
-                if (bestMove !== null && showBest) {
-                    if (
-                        newSquares[bestMove].background !==
-                            "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
-                        newSquares[bestMove].background !==
-                            "rgba(255,0, 0, 0.4)"
-                    ) {
-                        newSquares[bestMove] = {
-                            background:
-                                "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
-                        };
+                    const bestMove = getSq(findBestMove(tour));
+                    if (bestMove !== null && showBest) {
+                        if (
+                            newSquares[bestMove].background !==
+                                "radial-gradient(circle, rgba(255,0,0,0.4) 25%, transparent 25%)" &&
+                            newSquares[bestMove].background !==
+                                "rgba(255,0, 0, 0.4)"
+                        ) {
+                            newSquares[bestMove] = {
+                                background:
+                                    "radial-gradient(circle, rgba(0,255,0,0.4) 25%, transparent 25%)",
+                            };
+                        }
                     }
+                    setOptions(newSquares);
                 }
-                setOptions(newSquares);
+            } else {
+                setOptions({
+                    [square]: {
+                        background: "rgba(0,255,0,0.4)",
+                        cursor: "pointer",
+                    },
+                });
             }
-        } else {
-            setOptions({
-                [square]: {
-                    background: "rgba(0,255,0,0.4)",
-                    cursor: "pointer",
-                },
-            });
         }
     };
 
-    const mouseOut = () => {
-        if (Object.keys(options).length !== 0) setOptions({});
+    const mouseOut = async () => {
+        if (Object.keys(options).length !== 0) {
+            await timer(1000);
+            setOptions({});
+        }
     };
 
     const finishTour = () => {
@@ -172,9 +191,10 @@ function App() {
         }
     };
 
-    const dropPiece = (square) => {
+    const onSquareClick = (square) => {
+        const valids = tour.validMoves.map((value) => getSq(value));
+
         if (isFirst) {
-            setIsFirst(false);
             const newTour = cloneDeep(tour);
 
             const init = sqToFen(square);
@@ -186,14 +206,15 @@ function App() {
             newTour.validMoves = initValids(square, makeNumber(square));
             newTour.fen = init.fen;
             setTour(newTour);
-        } else {
-            return null;
+        } else if (valids.includes(square)) {
+            onDrop(tour.visitedStr.slice(-1)[0], square, "wN");
+        } else if (square === tour.visitedStr.slice(-1)[0]) {
+            mouseOver(square);
         }
     };
 
     const randomStart = () => {
         if (isFirst) {
-            setIsFirst(false);
             const newTour = cloneDeep(tour);
 
             const init = makeFen();
@@ -211,6 +232,7 @@ function App() {
     const visualiseComplete = async () => {
         // console.log(tour);
         if (tour.completed) {
+            setVisualising(true);
             let visiteds = [];
 
             for (let i = tour.visited.length; i < 65; i++) {
@@ -233,6 +255,7 @@ function App() {
                 setTour(newTour);
                 await timer(500);
             }
+            setVisualising(false);
         }
     };
 
@@ -254,66 +277,77 @@ function App() {
                         isDraggablePiece={isDraggable}
                         onPieceDrop={onDrop}
                         customArrows={arrows}
-                        onSquareClick={dropPiece}
+                        onSquareClick={onSquareClick}
                         onMouseOverSquare={mouseOver}
                         onMouseOutSquare={mouseOut}
-                        customSquareStyles={{ ...options }}
+                        customSquareStyles={
+                            tour.visited.length !== 64
+                                ? { ...options }
+                                : { ...options, ...firstLast }
+                        }
                         customBoardStyle={boardTheme.customBoardStyle}
                         customDarkSquareStyle={boardTheme.customDarkSquareStyle}
                         customLightSquareStyle={
                             boardTheme.customLightSquareStyle
                         }
                     />
-                    <ButtonGroup
-                        variant="contained"
-                        className="controls"
-                        // orientation="vertical"
-                    >
-                        {isFirst ? (
-                            <Button onClick={randomStart}>Random Start</Button>
-                        ) : null}
+                    {!visualising ? (
+                        <ButtonGroup
+                            variant="contained"
+                            className="controls"
+                            // orientation="vertical"
+                        >
+                            {isFirst ? (
+                                <Button onClick={randomStart}>
+                                    Random Start
+                                </Button>
+                            ) : null}
 
-                        {isFirst ? (
-                            <NavButton to={"/tutorial"}>Tutorial</NavButton>
-                        ) : null}
+                            {isFirst ? (
+                                <NavButton to={"/tutorial"}>Tutorial</NavButton>
+                            ) : null}
 
-                        {tour.visited.length !== 0 &&
-                        !(
-                            tour.completed ||
-                            tour.visited.length === 64 ||
-                            tour.validMoves.length === 0
-                        ) ? (
-                            <Button onClick={finishTour}>Complete Tour</Button>
-                        ) : null}
+                            {tour.visited.length !== 0 &&
+                            !(
+                                tour.completed ||
+                                tour.visited.length === 64 ||
+                                tour.validMoves.length === 0
+                            ) ? (
+                                <Button onClick={finishTour}>
+                                    Complete Tour
+                                </Button>
+                            ) : null}
 
-                        {tour.completed && tour.visited.length !== 64 ? (
-                            <Button onClick={visualiseComplete}>
-                                Visualise
-                            </Button>
-                        ) : null}
+                            {tour.completed && tour.visited.length !== 64 ? (
+                                <Button onClick={visualiseComplete}>
+                                    Visualise
+                                </Button>
+                            ) : null}
 
-                        {tour.visited.length > 1 ? (
-                            <Button
-                                onClick={() =>
-                                    setArrows(genArrows(tour.visitedStr))
-                                }
-                            >
-                                Show path
-                            </Button>
-                        ) : null}
+                            {tour.visited.length > 1 ? (
+                                <Button
+                                    onClick={() =>
+                                        setArrows(genArrows(tour.visitedStr))
+                                    }
+                                >
+                                    Show path
+                                </Button>
+                            ) : null}
 
-                        {1 < tour.visited.length && tour.visited.length < 64 ? (
-                            <Button onClick={undo}>Undo</Button>
-                        ) : null}
+                            {1 < tour.visited.length &&
+                            tour.visited.length < 64 ? (
+                                <Button onClick={undo}>Undo</Button>
+                            ) : null}
 
-                        {tour.visited.length !== 0 ? (
-                            <Button onClick={reset}>
-                                {tour.visited.length === 64
-                                    ? "Play again"
-                                    : "Reset"}
-                            </Button>
-                        ) : null}
-                    </ButtonGroup>
+                            {tour.visited.length !== 0 ? (
+                                <Button onClick={reset}>
+                                    {tour.visited.length === 64
+                                        ? "Play again"
+                                        : "Reset"}
+                                </Button>
+                            ) : null}
+                        </ButtonGroup>
+                    ) : null}
                     <FormControlLabel
                         label="Show least degree move"
                         control={

@@ -357,18 +357,35 @@ function App() {
                             ) : null}
                         </ButtonGroup>
                     ) : null}
-                    <FormControlLabel
-                        label="Show least degree move"
-                        control={
-                            <Switch
-                                onChange={() => {
-                                    setShowBest(!showBest);
-                                }}
-                            />
-                        }
-                    />
+                    {!(visualising || completed) ? (
+                        <FormControlLabel
+                            checked={showBest}
+                            label="Show least degree move"
+                            control={
+                                <Switch
+                                    onChange={() => {
+                                        setShowBest(!showBest);
+                                    }}
+                                />
+                            }
+                        />
+                    ) : null}
+                    {tour.completed && !(visualising || completed) ? (
+                        <FormControlLabel
+                            checked={showPath}
+                            label="Show path when visualising"
+                            control={
+                                <Switch
+                                    onChange={() => {
+                                        setShowPath(!showPath);
+                                    }}
+                                />
+                            }
+                        />
+                    ) : null}
                     {isFirst ? (
                         <FormControlLabel
+                            checked={kq}
                             label="Use King/Queen"
                             control={<Switch onChange={changeKq} />}
                         />

@@ -45,6 +45,7 @@ function App() {
     const [options, setOptions] = useState({});
     const [completed, setCompleted] = useState(false);
     const [showBest, setShowBest] = useState(false);
+    const [showPath, setShowPath] = useState(false);
     const [kq, setKq] = useState(false);
     const [firstLast, setFirstLast] = useState();
     const [visualising, setVisualising] = useState(false);
@@ -257,6 +258,9 @@ function App() {
                 newTour.fen = fen;
                 // console.log(newTour);
                 setTour(newTour);
+                if (showPath) {
+                    setArrows(genArrows(newTour.visitedStr));
+                }
                 await timer(500);
             }
             setVisualising(false);

@@ -56,6 +56,7 @@ function App() {
         if (tour.visited.length === 0) {
             setCompleted(false);
             setIsFirst(true);
+            setFirstLast(undefined);
         } else if (tour.visited.length === 64) {
             setCompleted(true);
             setFirstLast({
@@ -69,6 +70,7 @@ function App() {
         } else {
             setCompleted(false);
             setIsFirst(false);
+            setFirstLast(undefined);
         }
     }, [tour]);
 

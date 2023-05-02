@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import {
     completeTour,
@@ -45,14 +45,18 @@ function App() {
     const [options, setOptions] = useState({});
     const [completed, setCompleted] = useState(false);
     const [showBest, setShowBest] = useState(false);
+    const [showPath, setShowPath] = useState(false);
     const [kq, setKq] = useState(false);
     const [firstLast, setFirstLast] = useState();
     const [visualising, setVisualising] = useState(false);
+
+    const showArrowBtn = useRef(null);
 
     useEffect(() => {
         if (tour.visited.length === 0) {
             setCompleted(false);
             setIsFirst(true);
+            setFirstLast(undefined);
         } else if (tour.visited.length === 64) {
             setCompleted(true);
             setFirstLast({
@@ -66,6 +70,7 @@ function App() {
         } else {
             setCompleted(false);
             setIsFirst(false);
+            setFirstLast(undefined);
         }
     }, [tour]);
 
@@ -162,7 +167,9 @@ function App() {
 
     const mouseOut = async () => {
         if (Object.keys(options).length !== 0) {
-            await timer(1000);
+            if (!isFirst) {
+                await timer(1000);
+            }
             setOptions({});
         }
     };
@@ -253,17 +260,23 @@ function App() {
                 newTour.fen = fen;
                 // console.log(newTour);
                 setTour(newTour);
+                if (showPath) {
+                    setArrows(genArrows(newTour.visitedStr));
+                }
                 await timer(500);
             }
             setVisualising(false);
         }
     };
 
-    const changeKq = () => {
-        setKq(!kq);
-        const newTour = cloneDeep(tour);
-        newTour.fen = updateFen(newTour.visited, kq);
-        setTour(newTour);
+    const onPieceDragBegin = (piece, src) => {
+        mouseOver(src);
+    };
+
+    const onPieceDragEnd = () => {
+        if (Object.keys(options).length !== 0) {
+            setOptions({});
+        }
     };
 
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -275,6 +288,8 @@ function App() {
                     <Chessboard
                         position={tour.fen}
                         isDraggablePiece={isDraggable}
+                        onPieceDragBegin={onPieceDragBegin}
+                        onPieceDragEnd={onPieceDragEnd}
                         onPieceDrop={onDrop}
                         customArrows={arrows}
                         onSquareClick={onSquareClick}
@@ -326,6 +341,7 @@ function App() {
 
                             {tour.visited.length > 1 ? (
                                 <Button
+                                    ref={showArrowBtn}
                                     onClick={() =>
                                         setArrows(genArrows(tour.visitedStr))
                                     }
@@ -348,20 +364,37 @@ function App() {
                             ) : null}
                         </ButtonGroup>
                     ) : null}
-                    <FormControlLabel
-                        label="Show least degree move"
-                        control={
-                            <Switch
-                                onChange={() => {
-                                    setShowBest(!showBest);
-                                }}
-                            />
-                        }
-                    />
+                    {!(visualising || completed) ? (
+                        <FormControlLabel
+                            checked={showBest}
+                            label="Show least degree move"
+                            control={
+                                <Switch
+                                    onChange={() => {
+                                        setShowBest(!showBest);
+                                    }}
+                                />
+                            }
+                        />
+                    ) : null}
+                    {tour.completed && !(visualising || completed) ? (
+                        <FormControlLabel
+                            checked={showPath}
+                            label="Show path when visualising"
+                            control={
+                                <Switch
+                                    onChange={() => {
+                                        setShowPath(!showPath);
+                                    }}
+                                />
+                            }
+                        />
+                    ) : null}
                     {isFirst ? (
                         <FormControlLabel
+                            checked={kq}
                             label="Use King/Queen"
-                            control={<Switch onChange={changeKq} />}
+                            control={<Switch onChange={() => setKq(!kq)} />}
                         />
                     ) : null}
                 </Grid>

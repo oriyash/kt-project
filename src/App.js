@@ -269,11 +269,14 @@ function App() {
         }
     };
 
-    const changeKq = () => {
-        setKq(!kq);
-        const newTour = cloneDeep(tour);
-        newTour.fen = updateFen(newTour.visited, kq);
-        setTour(newTour);
+    const onPieceDragBegin = (piece, src) => {
+        mouseOver(src);
+    };
+
+    const onPieceDragEnd = () => {
+        if (Object.keys(options).length !== 0) {
+            setOptions({});
+        }
     };
 
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -285,6 +288,8 @@ function App() {
                     <Chessboard
                         position={tour.fen}
                         isDraggablePiece={isDraggable}
+                        onPieceDragBegin={onPieceDragBegin}
+                        onPieceDragEnd={onPieceDragEnd}
                         onPieceDrop={onDrop}
                         customArrows={arrows}
                         onSquareClick={onSquareClick}
@@ -389,7 +394,7 @@ function App() {
                         <FormControlLabel
                             checked={kq}
                             label="Use King/Queen"
-                            control={<Switch onChange={changeKq} />}
+                            control={<Switch onChange={() => setKq(!kq)} />}
                         />
                     ) : null}
                 </Grid>

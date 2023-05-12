@@ -304,6 +304,7 @@ function App() {
                             boardTheme.customLightSquareStyle
                         }
                     />
+
                     {!visualising ? (
                         <ButtonGroup
                             variant="contained"
@@ -361,39 +362,41 @@ function App() {
                             ) : null}
                         </ButtonGroup>
                     ) : null}
-                    {!(visualising || completed) ? (
-                        <FormControlLabel
-                            checked={showBest}
-                            label="Show least degree move"
-                            control={
-                                <Switch
-                                    onChange={() => {
-                                        setShowBest(!showBest);
-                                    }}
-                                />
-                            }
-                        />
-                    ) : null}
-                    {tour.completed && !(visualising || completed) ? (
-                        <FormControlLabel
-                            checked={showPath}
-                            label="Show path when visualising"
-                            control={
-                                <Switch
-                                    onChange={() => {
-                                        setShowPath(!showPath);
-                                    }}
-                                />
-                            }
-                        />
-                    ) : null}
-                    {isFirst ? (
-                        <FormControlLabel
-                            checked={kq}
-                            label="Use King/Queen"
-                            control={<Switch onChange={() => setKq(!kq)} />}
-                        />
-                    ) : null}
+                    <div className="settings">
+                        {!(visualising || completed) ? (
+                            <FormControlLabel
+                                checked={showBest}
+                                label="Show least degree move"
+                                control={
+                                    <Switch
+                                        onChange={() => {
+                                            setShowBest(!showBest);
+                                        }}
+                                    />
+                                }
+                            />
+                        ) : null}
+                        {tour.completed && !(visualising || completed) ? (
+                            <FormControlLabel
+                                checked={showPath}
+                                label="Show path when visualising"
+                                control={
+                                    <Switch
+                                        onChange={() => {
+                                            setShowPath(!showPath);
+                                        }}
+                                    />
+                                }
+                            />
+                        ) : null}
+                        {!visualising ? (
+                            <FormControlLabel
+                                checked={kq}
+                                label="Use King/Queen"
+                                control={<Switch onChange={() => setKq(!kq)} />}
+                            />
+                        ) : null}
+                    </div>
                 </Grid>
                 <Grid item xs={12} md={6} lg={6} id="right">
                     <Status tour={tour} completed={completed} />
@@ -410,6 +413,7 @@ export const boardTheme = {
     customBoardStyle: {
         borderRadius: "4px",
         boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
+        color: "black",
     },
     customLightSquareStyle: { background: "#4D4D4D" },
     customDarkSquareStyle: { background: "#FFF4E0" },

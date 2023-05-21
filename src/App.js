@@ -72,6 +72,21 @@ function App() {
         }
     }, [tour]);
 
+    // useEffect(() => {
+    //     if (!tutorial) {
+    //         //do thing here
+    //     } else if (tutorial === 1) {
+    //     }
+    // }, [tutorial]);
+
+    useEffect(() => {
+        if (tour.visited.length > 1) {
+            const newTour = cloneDeep(tour);
+            newTour.fen = updateFen(newTour.visited, kq);
+            setTour(newTour);
+        }
+    }, [kq]);
+
     const isDraggable = (piece) =>
         piece.piece === "wN" &&
         tour.visited.length !== 64 &&

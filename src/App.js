@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import {
     completeTour,
@@ -25,9 +25,9 @@ import {
     Switch,
 } from "@mui/material";
 import Status from "./Status";
-import NavButton from "./NavButton";
 import ProposedSolution from "./ProposedSolution";
 import IsClosable from "./IsClosable";
+import Tutorial from "./Tutorial";
 
 function App() {
     const [isFirst, setIsFirst] = useState(true);
@@ -49,8 +49,8 @@ function App() {
     const [kq, setKq] = useState(false);
     const [firstLast, setFirstLast] = useState();
     const [visualising, setVisualising] = useState(false);
-
-    const showArrowBtn = useRef(null);
+    const [tutorial, setTutorial] = useState(0);
+    const [draw, setDraw] = useState(false);
 
     useEffect(() => {
         if (tour.visited.length === 0) {
@@ -71,8 +71,25 @@ function App() {
             setCompleted(false);
             setIsFirst(false);
             setFirstLast(undefined);
+            if (draw && !visualising) {
+                setArrows(genArrows(tour.visitedStr));
+            }
         }
     }, [tour]);
+
+    useEffect(() => {
+        if (!tutorial || tutorial === 1) {
+            reset();
+        }
+    }, [tutorial]);
+
+    useEffect(() => {
+        if (tour.visited.length > 1) {
+            const newTour = cloneDeep(tour);
+            newTour.fen = updateFen(newTour.visited, kq);
+            setTour(newTour);
+        }
+    }, [kq]);
 
     const isDraggable = (piece) =>
         piece.piece === "wN" &&
@@ -271,6 +288,9 @@ function App() {
 
     const onPieceDragBegin = (piece, src) => {
         mouseOver(src);
+        if (draw) {
+            setArrows(genArrows(tour.visitedStr));
+        }
     };
 
     const onPieceDragEnd = () => {
@@ -306,6 +326,7 @@ function App() {
                             boardTheme.customLightSquareStyle
                         }
                     />
+
                     {!visualising ? (
                         <ButtonGroup
                             variant="contained"
@@ -316,10 +337,6 @@ function App() {
                                 <Button onClick={randomStart}>
                                     Random Start
                                 </Button>
-                            ) : null}
-
-                            {isFirst ? (
-                                <NavButton to={"/tutorial"}>Tutorial</NavButton>
                             ) : null}
 
                             {tour.visited.length !== 0 &&
@@ -339,9 +356,9 @@ function App() {
                                 </Button>
                             ) : null}
 
-                            {tour.visited.length > 1 ? (
+                            {tour.visited.length > 1 &&
+                            (!draw || completed || completed === null) ? (
                                 <Button
-                                    ref={showArrowBtn}
                                     onClick={() =>
                                         setArrows(genArrows(tour.visitedStr))
                                     }
@@ -362,47 +379,101 @@ function App() {
                                         : "Reset"}
                                 </Button>
                             ) : null}
+
+                            {!tutorial && (
+                                <Button
+                                    onClick={() => setTutorial(tutorial + 1)}
+                                >
+                                    Tutorial
+                                </Button>
+                            )}
                         </ButtonGroup>
                     ) : null}
-                    {!(visualising || completed) ? (
-                        <FormControlLabel
-                            checked={showBest}
-                            label="Show least degree move"
-                            control={
-                                <Switch
-                                    onChange={() => {
-                                        setShowBest(!showBest);
-                                    }}
-                                />
-                            }
-                        />
-                    ) : null}
-                    {tour.completed && !(visualising || completed) ? (
-                        <FormControlLabel
-                            checked={showPath}
-                            label="Show path when visualising"
-                            control={
-                                <Switch
-                                    onChange={() => {
-                                        setShowPath(!showPath);
-                                    }}
-                                />
-                            }
-                        />
-                    ) : null}
-                    {isFirst ? (
-                        <FormControlLabel
-                            checked={kq}
-                            label="Use King/Queen"
-                            control={<Switch onChange={() => setKq(!kq)} />}
-                        />
-                    ) : null}
+                    <div className="settings">
+                        {!(visualising || completed) ? (
+                            <FormControlLabel
+                                checked={showBest}
+                                label="Show least degree move"
+                                control={
+                                    <Switch
+                                        onChange={() => {
+                                            setShowBest(!showBest);
+                                        }}
+                                    />
+                                }
+                            />
+                        ) : null}
+                        {tour.completed && !(visualising || completed) ? (
+                            <FormControlLabel
+                                checked={showPath}
+                                label="Show path when visualising"
+                                control={
+                                    <Switch
+                                        onChange={() => {
+                                            setShowPath(!showPath);
+                                        }}
+                                    />
+                                }
+                            />
+                        ) : null}
+                        {!visualising ? (
+                            <FormControlLabel
+                                checked={kq}
+                                label="Use King/Queen"
+                                control={<Switch onChange={() => setKq(!kq)} />}
+                            />
+                        ) : null}
+                        {!(visualising || completed) ? (
+                            <FormControlLabel
+                                checked={draw}
+                                label="Draw path on move"
+                                control={
+                                    <Switch onChange={() => setDraw(!draw)} />
+                                }
+                            />
+                        ) : null}
+                    </div>
                 </Grid>
                 <Grid item xs={12} md={6} lg={6} id="right">
-                    <Status tour={tour} completed={completed} />
-                    <Moves tour={tour} />
-                    <IsClosable tour={tour} />
-                    <ProposedSolution tour={tour} />
+                    {!tutorial ? (
+                        <span>
+                            <Status tour={tour} completed={completed} />
+                            <Moves tour={tour} />
+                            <IsClosable tour={tour} />
+                            <ProposedSolution tour={tour} />
+                        </span>
+                    ) : (
+                        <div>
+                            <Tutorial tutorial={tutorial} />
+                            <ButtonGroup
+                                style={{ margin: "1em 0 0 0 " }}
+                                variant="contained"
+                                color="primary"
+                            >
+                                {tutorial > 1 ? (
+                                    <Button
+                                        onClick={() =>
+                                            setTutorial(tutorial - 1)
+                                        }
+                                    >
+                                        Previous
+                                    </Button>
+                                ) : null}
+                                {tutorial < 6 ? (
+                                    <Button
+                                        onClick={() =>
+                                            setTutorial(tutorial + 1)
+                                        }
+                                    >
+                                        Next
+                                    </Button>
+                                ) : null}
+                                <Button onClick={() => setTutorial(0)}>
+                                    Quit
+                                </Button>
+                            </ButtonGroup>
+                        </div>
+                    )}
                 </Grid>
             </Grid>
         </Container>
@@ -413,9 +484,10 @@ export const boardTheme = {
     customBoardStyle: {
         borderRadius: "4px",
         boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
+        color: "black",
     },
-    customLightSquareStyle: { background: "#4D4D4D" },
-    customDarkSquareStyle: { background: "#FFF4E0" },
+    customLightSquareStyle: { background: "#FFF4E0" },
+    customDarkSquareStyle: { background: "#4D4D4D" },
 };
 
 export default App;

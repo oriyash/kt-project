@@ -430,8 +430,8 @@ export const boardTheme = {
         boxShadow: "0 5px 15px rgba(0, 0, 0, 0.5)",
         color: "black",
     },
-    customLightSquareStyle: { background: "#4D4D4D" },
-    customDarkSquareStyle: { background: "#FFF4E0" },
+    customLightSquareStyle: { background: "#FFF4E0" },
+    customDarkSquareStyle: { background: "#4D4D4D" },
 };
 
 export default App;

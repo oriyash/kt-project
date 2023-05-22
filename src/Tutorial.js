@@ -1,99 +1,113 @@
-import "./Tutorial.css";
-import NavButton from "./NavButton";
-import { Chessboard } from "react-chessboard";
-import { Fab, Grid, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { boardTheme } from "./App";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { Typography } from "@mui/material";
+import PropTypes from "prop-types";
+import KnightIcon from "./KnightIcon";
 
-function Tutorial() {
-    const [step, setStep] = useState(0);
-    const [assets, setAssets] = useState({
-        position: {
-            b5: "bN",
-            d6: "bN",
-            e4: "wN",
-        },
-        arrows: [
-            ["b5", "d6"],
-            ["d6", "e4"],
-        ],
-        isDraggable: () => false,
-    });
+function Tutorial({ tutorial }) {
+    if (!tutorial) {
+        return null;
+    } else if (tutorial === 1) {
+        const rules = [
+            "The aim of the game is to visit all the squares on the board with the white knight",
+            "You cannot move to squares you have already visited",
+            "Previously visited squares will be occupied with a black knight",
+            "The knight moves like in a normal game of chess",
+        ];
 
-    useEffect(() => {
-        if (step === 0) {
-            setAssets({
-                position: {
-                    b5: "bN",
-                    d6: "bN",
-                    e4: "wN",
-                },
-                arrows: [
-                    ["b5", "d6"],
-                    ["d6", "e4"],
-                ],
-                isDraggable: () => false,
-            });
-        } else if (step === 1) {
-            setAssets({
-                position: {
-                    b5: "bN",
-                    d6: "bN",
-                    e4: "wN",
-                },
-                arrows: [
-                    ["b5", "d6"],
-                    ["d6", "e4"],
-                ],
-                isDraggable: () => true,
-            });
-        } else if (step === 2) {
-            setAssets({
-                position: {
-                    b5: "bN",
-                    d6: "bN",
-                    e4: "wN",
-                },
-                arrows: [
-                    ["b5", "d6"],
-                    ["d6", "e4"],
-                    ["e4", "g6"],
-                ],
-                isDraggable: () => false,
-            });
-        }
-    }, [step]);
-
-    return (
-        <Grid container>
-            <Grid item xs={12} md={6} lg={6}>
-                <Chessboard
-                    position={assets.position}
-                    isDraggablePiece={assets.isDraggable}
-                    customArrows={assets.arrows}
-                    customBoardStyle={boardTheme.customBoardStyle}
-                    customDarkSquareStyle={boardTheme.customDarkSquareStyle}
-                    customLightSquareStyle={boardTheme.customLightSquareStyle}
-                />
-            </Grid>
-            <Grid item xs={12} md={6} lg={6}>
-                <Typography variant="h4">Tutorial</Typography>
-                <NavButton to={"/"}>Home</NavButton>
-                {step > 0 ? (
-                    <Fab onClick={() => setStep(step - 1)}>
-                        <ArrowBackIcon />
-                    </Fab>
-                ) : null}
-                {step < 2 ? (
-                    <Fab onClick={() => setStep(step + 1)}>
-                        <ArrowForwardIcon />
-                    </Fab>
-                ) : null}
-            </Grid>
-        </Grid>
-    );
+        return (
+            <div>
+                <Typography variant="h3">Knight&apos;s Tour Basics</Typography>
+                <Steps list={rules} />
+            </div>
+        );
+    } else if (tutorial === 2) {
+        const actions = [
+            "Choose your starting square by clicking on it or randomise",
+            "Move to square by dragging the white knight to it or clicking on it",
+            "You can show the path you took",
+            "The moves you play will show up next or below the board",
+            "You can undo your previous move or reset the game",
+        ];
+        return (
+            <div>
+                <Typography variant="h3">Possible Actions</Typography>{" "}
+                <Steps list={actions} />
+            </div>
+        );
+    } else if (tutorial === 3) {
+        const moves = [
+            "Hovering or clicking the white knight will show the different valid squares",
+            "The recommended move is shown in green",
+            "A losing move shows up in red",
+        ];
+        return (
+            <div>
+                <Typography variant="h3">Valid moves</Typography>
+                <Steps list={moves} />
+            </div>
+        );
+    } else if (tutorial === 4) {
+        const info = [
+            "At any point in the game you can try and use the computer to complete the tour",
+            "The autocomplete uses Warnsdorff Heuristic to complete the tour",
+            "The proposed solution will show up under your moves",
+            "You may explore the solution move by move manually or use the auto visualisation",
+        ];
+        return (
+            <div>
+                <Typography variant="h3">Autocomplete</Typography>
+                <Steps list={info} />
+            </div>
+        );
+    } else if (tutorial === 5) {
+        const info = [
+            "Every completed knight's tour is either an open tour or a closed tour",
+            "A closed tour means that with one extra move the knight could move back to the square it started on",
+            "At the end of a tour a prompt will show up saying if the current tour is open or close",
+        ];
+        return (
+            <div>
+                <Typography variant="h3">Open and Closed tours</Typography>
+                <Steps list={info} />
+            </div>
+        );
+    } else if (tutorial === 6) {
+        const settings = [
+            "Show least degree move - shows the move recommended by Warnsdorff Heuristic",
+            "Show path when visualising - traces the path with arrows on the auto visualisation",
+            "Use King/Queen - replaces the starting and ending knights with King and Queen",
+            "Draw path on move - will show the current path when moving the knight",
+        ];
+        return (
+            <div>
+                <Typography variant="h3">Different Settings</Typography>
+                <Steps list={settings} />
+            </div>
+        );
+    }
 }
+
+function Steps({ list }) {
+    return list.map((item, index) => {
+        return (
+            <div
+                key={index}
+                style={{
+                    background: "#1d4e89",
+                    padding: "1em",
+                    margin: "1em 0 0 0",
+                    borderRadius: "1em",
+                }}
+            >
+                <Typography variant="h5">
+                    <KnightIcon /> {item}
+                </Typography>
+            </div>
+        );
+    });
+}
+
+Tutorial.propTypes = {
+    tutorial: PropTypes.number,
+};
 
 export default Tutorial;

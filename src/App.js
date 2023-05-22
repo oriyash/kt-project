@@ -75,7 +75,7 @@ function App() {
                 setArrows(genArrows(tour.visitedStr));
             }
         }
-    }, [tour]);
+    }, [tour]); // eslint-disable-line no-console
 
     useEffect(() => {
         if (!tutorial || tutorial === 1) {
@@ -89,7 +89,7 @@ function App() {
             newTour.fen = updateFen(newTour.visited, kq);
             setTour(newTour);
         }
-    }, [kq]);
+    }, [kq]); // eslint-disable-line no-console
 
     const isDraggable = (piece) =>
         piece.piece === "wN" &&

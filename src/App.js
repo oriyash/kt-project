@@ -52,6 +52,7 @@ function App() {
     const [tutorial, setTutorial] = useState(0);
     const [draw, setDraw] = useState(false);
 
+    /* eslint-disable*/
     useEffect(() => {
         if (tour.visited.length === 0) {
             setCompleted(false);
@@ -75,7 +76,7 @@ function App() {
                 setArrows(genArrows(tour.visitedStr));
             }
         }
-    }, [tour]); // eslint-disable-line no-console
+    }, [tour]);
 
     useEffect(() => {
         if (!tutorial || tutorial === 1) {
@@ -89,7 +90,8 @@ function App() {
             newTour.fen = updateFen(newTour.visited, kq);
             setTour(newTour);
         }
-    }, [kq]); // eslint-disable-line no-console
+    }, [kq]);
+    /* eslint-enable*/
 
     const isDraggable = (piece) =>
         piece.piece === "wN" &&

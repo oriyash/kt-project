@@ -292,10 +292,69 @@ export function findBestMove(tour) {
             (move) => updateValids(tour, getSq(move), move).length
         );
 
-        return valids[deg.indexOf(min(deg))];
+        const minDeg = min(deg);
+        let bestMoveIndex = getAllIndices(minDeg, deg);
+
+        if (bestMoveIndex.length === 1) {
+            return valids[bestMoveIndex[0]];
+        } else {
+            let validsFiltered = valids.filter((value, index) =>
+                bestMoveIndex.includes(index)
+            );
+
+            let nextMoveDeg = [];
+
+            for (let valid of validsFiltered) {
+                const newTour = cloneDeep(tour);
+                newTour.visited = [...newTour.visited, valid];
+                newTour.visitedStr = [...newTour.visitedStr, getSq(valid)];
+                newTour.validMoves = updateValids(tour, getSq(valid), valid);
+                nextMoveDeg = [...nextMoveDeg, newTour.validMoves.length];
+            }
+
+            let filteredIndices = getAllIndices(min(nextMoveDeg), nextMoveDeg);
+
+            if (filteredIndices.length === 1) {
+                return validsFiltered[filteredIndices[0]];
+            } else {
+                let accessFilter = validsFiltered.filter((value, index) =>
+                    filteredIndices.includes(index)
+                );
+
+                let access = [];
+
+                for (let valid of accessFilter) {
+                    let validMoves = initValids(getSq(valid), valid);
+                    access = [...access, validMoves.length];
+                }
+
+                let accessIndices = getAllIndices(min(access), access);
+
+                if (accessIndices.length === 1) {
+                    return accessFilter[accessIndices[0]];
+                } else {
+                    let randomIndex = Math.floor(
+                        Math.random() * accessIndices.length
+                    );
+                    return accessFilter[randomIndex];
+                }
+            }
+        }
     } else {
         return null;
     }
+}
+
+function getAllIndices(value, array) {
+    let indices = [];
+
+    array.forEach((currentValue, index) => {
+        if (currentValue === value) {
+            indices = [...indices, index];
+        }
+    });
+
+    return indices;
 }
 
 export function getSq(num) {

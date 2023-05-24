@@ -52,6 +52,8 @@ function App() {
     const [tutorial, setTutorial] = useState(0);
     const [draw, setDraw] = useState(false);
 
+    // const [tutorialProps, setTutorialProps] = useState({});
+
     /* eslint-disable*/
     useEffect(() => {
         if (tour.visited.length === 0) {

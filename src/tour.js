@@ -330,14 +330,7 @@ export function findBestMove(tour) {
 
                 let accessIndices = getAllIndices(min(access), access);
 
-                if (accessIndices.length === 1) {
-                    return accessFilter[accessIndices[0]];
-                } else {
-                    let randomIndex = Math.floor(
-                        Math.random() * accessIndices.length
-                    );
-                    return accessFilter[randomIndex];
-                }
+                return accessFilter[accessIndices[0]];
             }
         }
     } else {

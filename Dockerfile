@@ -1,10 +1,16 @@
-FROM node
+FROM node AS builder
 
 WORKDIR /app
-COPY . .
-
+COPY package*.json ./
 RUN npm install
 
-EXPOSE 3000
+COPY . .
+RUN npm run build
 
-CMD ["npm", "start"]
+FROM nginx
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

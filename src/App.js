@@ -23,6 +23,7 @@ import {
     FormControlLabel,
     Grid,
     Switch,
+    Typography,
 } from "@mui/material";
 import Status from "./Status";
 import ProposedSolution from "./ProposedSolution";
@@ -439,6 +440,7 @@ function App() {
                     </div>
                 </Grid>
                 <Grid item xs={12} md={6} lg={6} id="right">
+                    <Typography variant="h2">Knight&apos;s Tour</Typography>
                     {!tutorial ? (
                         <span>
                             <Status tour={tour} completed={completed} />
